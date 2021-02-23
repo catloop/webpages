@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="telphone=no, email=no">
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-touch-fullscreen" content="yes">
+	<meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+	<title>天津联通</title>
+	<script src ="./js/flexible.js"></script>
+	<link rel="stylesheet" href="./css/common.css">
+	<link rel="stylesheet" href="./css/sign.css">
+</head>
+
+<body class="sign">
+	<div class="page">
+		<nav class="navigator">
+			<a href="./index.html" class="btn-link">活动首页</a>
+			<a href="./rule.html" class="btn-link">活动规则</a>
+		</nav>
+
+		<div class="banner-balance styled-title">
+			当前金币余额：<span class="num">9999</span>
+		</div>
+
+		<div class="sign-panel">
+			<div class="nav-tabs">
+				<button class="nav sign active" data-toggle="tab" data-target="#tabContentSign">签到</button>
+				<button class="nav retroactive" data-toggle="tab" data-target="#tabContentRetroactive">获得补签卡</button>
+			</div>
+
+			<div class="tab-content active" id="tabContentSign">
+				<table class="calendar" id="calendar"><tbody></tbody></table>
+
+				<div class="retroactive">
+					<p class="break-sign">
+						当前漏签：<span class="num" id="breakSignNum">6</span>天
+					</p>
+					<button class="btn-one-key btn-middle btn" id="btnOneKey">一键补签</button>
+				</div>
+
+				<div class="continuous">
+					已连续签<br />
+					到 <span class="num" id="continuousNum">233</span> 天
+				</div>
+			</div>
+
+			<div class="tab-content" id="tabContentRetroactive">
+				<p class="empty-placeholder">该功能正在努力开发中……</p>
+			</div>
+		</div>
+
+		<div class="stage-panel">
+			<button class="sub-title btn btn-middle">已获得权益</button>
+			<div class="stages" id="stages">
+				<div class="stage stage-1">
+					<p class="text">连续签到<span class="num">7</span>天</p>
+					<button class="btn-unlock btn-small btn" disabled>已解锁</button>
+				</div>
+				<div class="stage stage-2">
+					<p class="text">连续签到<span class="num">14</span>天</p>
+					<button class="btn-unlock btn-small btn">解 锁</button>
+				</div>
+				<div class="stage stage-3">
+					<p class="text">连续签到<span class="num">21</span>天</p>
+					<button class="btn-unlock btn-small btn">解 锁</button>
+				</div>
+				<div class="stage stage-4">
+					<p class="text">连续签到<span class="num">28</span>天</p>
+					<button class="btn-unlock btn-small btn">解 锁</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="dialog-container" id="selectAwardDialog">
+		<div class="dialog">
+			<h3 class="dialog-title styled-title">钻石宝箱四选一</h3>
+			<div class="dialog-content">
+				<label class="award checked">
+					<input type="radio" name="award" value="1" />
+					<img src="./images/sign/content-award-1.png" alt="腾讯视频月卡" />
+					<span>腾讯视频<br />月卡</span>
+				</label>
+				<label class="award">
+					<input type="radio" name="award" value="2" />
+					<img src="./images/sign/content-award-2.png" alt="美团骑行月卡" />
+					<span>美团骑行<br />月卡</span>
+				</label>
+				<label class="award">
+					<input type="radio" name="award" value="3" />
+					<img src="./images/sign/content-award-3.png" alt="QQ 音乐绿钻会员月卡" />
+					<span>QQ 音乐绿钻<br />会员月卡</span>
+				</label>
+				<label class="award">
+					<input type="radio" name="award" value="4" />
+					<img src="./images/sign/content-award-4.png" alt="2000 金币" />
+					<span>2000<br />金币</span>
+				</label>
+			</div>
+			<div class="dialog-actions">
+				<button
+					class="btn-confirm btn-large btn"
+					id="confirmSelectAwardBtn"
+					data-toggle="dialog"
+					data-target="#selectAwardDialog"
+				>确定</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="dialog-container" id="alert">
+		<div class="dialog">
+			<h3 class="dialog-title styled-title">标题</h3>
+			<div class="dialog-content">
+				滴滴出行大礼包<br /><br />
+				猫眼电影代金券
+			</div>
+			<div class="dialog-actions">
+				<button
+					class="btn-confirm btn-large btn"
+					data-toggle="dialog"
+					data-target="#alert"
+				>确定</button>
+			</div>
+		</div>
+	</div>
+</body>
+<script src="js/jquery-3.5.1.min.js"></script>
+<script type="text/javascript">
+$(function () {
+	// tab 切换
+	$('[data-toggle=tab]').click(function () {
+		$(this).addClass('active').siblings().removeClass('active');
+		$($(this).data('target')).addClass('active').siblings().removeClass('active');
+	});
+
+	// 渲染日历
+	$('#calendar tbody').html(function () {
+		var DAY = 1000 * 60 * 60 * 24;
+		var now = Date.now();
+		var currentMonth = new Date(now).getMonth();
+		var pre = now;
+		var next = now;
+		var days = [now];
+		while (new Date(pre -= DAY).getMonth() === currentMonth) days.unshift(pre);
+		while (new Date(next += DAY).getMonth() === currentMonth) days.push(next);
+		var prePadding = new Date(days[0]).getDay();
+		Array.prototype.unshift.apply(days, new Array(prePadding).fill(null));
+		var sufPadding = 7 - (days.length % 7);
+		Array.prototype.push.apply(days, new Array(sufPadding).fill(null));
+		var html = '';
+		days.forEach(function (day, index) {
+			var rowStart = !(index % 7) ? '<tr>' : '';
+			var rowEnd = (index % 7 === 6) ? '</tr>' : '';
+			var prefix = '<td>';
+			var suffix = '</td>';
+			var inner = '';
+			if (day) {
+				var dayObj = new Date(day);
+				var classList = ['day', dayObj.getDate() === new Date(now).getDate() ? 'today' : ''];
+				inner = '<div class="' + classList.join(' ').trim() + '">' + dayObj.getDate() + '</div>';
+			}
+			html += (rowStart + prefix + inner + suffix + rowEnd);
+		});
+		return html;
+	});
+
+	/**
+	 * 在日历上标示已签到的日期
+	 * @param {string[]} signedDays - 已签到的日期数组
+	*/
+	function markSignedDays (signedDays) {
+		$('#calendar .day').each(function () {
+			$(this)[signedDays.indexOf($(this).text()) !== -1 ? 'addClass' : 'removeClass']('signed');
+		});
+	}
+	// e.g.
+	markSignedDays(['1', '5', '7', '8', '9']);
+
+	/**
+	 * 设置阶段
+	 * @param {1 | 2 | 3 | 4} stage - 阶段名称
+	*/
+	function setStage (stage) {
+		$('#stages .stage').each(function (index) {
+			$(this)[index <= stage - 1 ? 'addClass' : 'removeClass']('active');
+		});
+	}
+	// e.g.
+	setStage(3);
+
+	// 通过 dom 属性 data-toggle 和 data-target 开关弹窗
+	$('[data-toggle=dialog]').click(function () {
+		$($(this).data('target')).toggleClass('show');
+	});
+
+	/**
+	 * 显示提示弹窗
+	 * @param {string} title - 标题
+	 * @param {string} content - 文字，html 可
+	*/
+	function showAlert (title, content) {
+		$('#alert').addClass('show').find('.dialog-title').text(title).end()
+			.find('.dialog-content').html(content);
+	}
+	// e.g.
+	setTimeout(function () {
+		showAlert('已获得权益', '滴滴出行大礼包<br /><br />猫眼电影代金券');
+	}, 3000);
+
+	$('#selectAwardDialog')
+		// 选择礼品改变样式
+		.find('input[type=radio]').change(function () {
+			$(this).parent().addClass('checked').siblings().removeClass('checked');
+		}).end()
+		// 选择礼品确定
+		.find('#confirmSelectAwardBtn').click(function () {
+			console.log('选中值：', $('#selectAwardDialog input[type=radio]:checked').val());
+		});
+});
+</script>
+
+</html>
