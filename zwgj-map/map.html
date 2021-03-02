@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="telphone=no, email=no">
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-touch-fullscreen" content="yes">
+	<meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+	<title>打卡地点</title>
+	<script src ="./js/flexible.js"></script>
+	<link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/2.0.1/weui.min.css">
+	<link rel="stylesheet" href="./css/common.css">
+	<link rel="stylesheet" href="./css/map.css">
+</head>
+
+<body class="map">
+	<div class="page">
+		<form action="" id="searchBar" class="search-bar">
+			<div class="input-wrapper">
+				<input type="text" placeholder="搜索" />
+				<span class="placeholder">搜索</span>
+			</div>
+		</form>
+		<div class="map-view">
+			<div id="map" class="map">
+			</div>
+			<button id="positionBtn" class="btn-position"></button>
+		</div>
+		<div class="address-wrapper">
+			<ul class="address-list" id="addressList"></ul>
+		</div>
+	</div>
+</body>
+<script charset="utf-8" src="https://map.qq.com/api/js?v=2.exp&key=EDTBZ-7ZU34-LDKUT-DVQIP-EGTUJ-MPFBH"></script>
+<script src="https://mapapi.qq.com/web/mapComponents/geoLocation/v/geolocation.min.js"></script>
+<script src="js/jquery-3.5.1.min.js"></script>
+<script src="https://res.wx.qq.com/open/libs/weuijs/1.2.1/weui.min.js"></script>
+<script type="text/javascript">
+$(function () {
+	var query = (function () {
+		var searchParams = new URLSearchParams(location.search.substr(1));
+		var lat = searchParams.get('lat');
+		var lng = searchParams.get('lng');
+		var addr = searchParams.get('addr');
+		var scope = searchParams.get('scope');
+		var redirect = searchParams.get('redirect');
+		return {
+			lat: lat ? parseFloat(lat) : null,
+			lng: lng ? parseFloat(lng) : null,
+			addr: addr,
+			scope: scope ? parseInt(scope) : 100,
+			redirect: redirect
+		};
+	})();
+
+	var API_KEY = 'EDTBZ-7ZU34-LDKUT-DVQIP-EGTUJ-MPFBH';
+	var geoLocation = new qq.maps.Geolocation(API_KEY, '%E5%BC%80%E5%8F%91');
+
+	function getLocation () {
+		return new Promise(function (resolve, reject) {
+			var loading = weui.loading('正在定位');
+			function rsv (res) {
+				loading.hide();
+				resolve(res);
+			}
+			geoLocation.getLocation(function (res) {
+				rsv(res);
+			}, function () {
+				weui.topTips('地理位置定位失败，使用 IP 定位');
+				geoLocation.getIpLocation(function (res) {
+					rsv(res);
+				}, function () {
+					loading.hide();
+					weui.topTips('IP 定位失败，请自行搜索位置');
+					reject();
+				});
+			});
+		});
+	}
+
+	var map = new qq.maps.Map($('#map')[0], {
+		zoom: 17 - ~~(4 * query.scope / 1000),
+		disableDefaultUI: true
+	});
+
+	var currentLocation = (function () {
+		var width = 44;
+		var height = 56;
+		var scaledWidth = width / window.devicePixelRatio;
+		var scaledHeight = height / window.devicePixelRatio;
+		return new qq.maps.Marker({
+			map: map,
+			icon: new qq.maps.MarkerImage(
+				'./images/map/icon-current-location.png',
+				new qq.maps.Size(scaledWidth, scaledHeight),
+				new qq.maps.Point(0, 0),
+				new qq.maps.Point(scaledWidth / 2, scaledHeight - scaledWidth + scaledWidth / 2),
+				new qq.maps.Size(scaledWidth, scaledHeight)
+			)
+		});
+	})();
+
+	function setCurrentLocationPosition (lat, lng) {
+		currentLocation.setPosition(new qq.maps.LatLng(lat, lng));
+	}
+
+	function setCurrentLocationRotation (deg) {
+		currentLocation.setRotation(deg);
+	}
+
+	// 监听当前位置，改变指针位置
+	geoLocation.watchPosition(function (location) {
+		setCurrentLocationPosition(location.lat, location.lng);
+	});
+
+	// 监听设备方向，改变指针方向
+	window.DeviceOrientationEvent && window.addEventListener('deviceorientation', function (event) {
+		setCurrentLocationRotation(-event.alpha || 0);
+	}, false);
+
+	var circle = new qq.maps.Circle({
+        map: map,
+        radius: query.scope,
+        strokeWeight: 2
+    });
+
+	var marker = (function () {
+		var width = 43;
+		var height = 87;
+		var scaledWidth = width / window.devicePixelRatio;
+		var scaledHeight = height / window.devicePixelRatio;
+		return new qq.maps.Marker({
+			map: map,
+			icon: new qq.maps.MarkerImage(
+				'./images/map/icon-marker.png',
+				new qq.maps.Size(scaledWidth, scaledHeight),
+				new qq.maps.Point(0, 0),
+				new qq.maps.Point(scaledWidth / 2, scaledHeight),
+				new qq.maps.Size(scaledWidth, scaledHeight)
+			)
+		});
+	})();
+
+	function setMapCenter (lat, lng) {
+		map.setCenter(new qq.maps.LatLng(lat, lng));
+	}
+
+	function panMapTo (lat, lng) {
+		map.panTo(new qq.maps.LatLng(lat, lng));
+	}
+
+	function getMapCenter () {
+		return map.getCenter();
+	}
+	
+	function setMarkerPosition (lat, lng) {
+		var center = new qq.maps.LatLng(lat, lng);
+		marker.setPosition(center);
+		circle.setCenter(center);
+	}
+
+	function setMapCenterAndMarkerPosition (lat, lng, trans) {
+		(trans ? panMapTo : setMapCenter)(lat, lng);
+		setMarkerPosition(lat, lng);
+	}
+
+	function setMapCenterToCurrentLocation () {
+		return getLocation()
+			.then(function (location) {
+				setMapCenterAndMarkerPosition(location.lat, location.lng, true);
+				return location;
+			});
+	}
+
+	function convertPosition (lat, lng, type) {
+		return new Promise(function (resolve, reject) {
+			$.ajax({
+				method: 'GET',
+				url: 'https://apis.map.qq.com/ws/coord/v1/translate?locations=' + lat + ',' + lng
+					+ '&type=' + (type || '3')
+					+ '&key=' + API_KEY
+					+ '&output=jsonp',
+				dataType: 'JSONP'
+			})
+				.done(function (res) {
+					if (res.status !== 0) return reject(new Error(res.message));
+					resolve(res.locations[0]);
+				})
+				.fail(function (err) {
+					reject(new Error(err.statusText));
+				});
+		});
+	}
+
+	function getLocationByPosition (lat, lng) {
+		return new Promise(function (resolve, reject) {
+			$.ajax({
+				method: 'GET',
+				url: 'https://apis.map.qq.com/ws/geocoder/v1/?location=' + lat + ',' + lng
+					+ '&key=' + API_KEY
+					+ '&output=jsonp',
+				dataType: 'JSONP'
+			})
+				.done(function (res) {
+					if (res.status !== 0) return reject(new Error(res.message));
+					resolve(res.result);
+				})
+				.fail(function (err) {
+					reject(new Error(err.statusText));
+				});
+		});
+	}
+
+	function searchAddress (keyword, region) {
+		return new Promise(function (resolve, reject) {
+			$.ajax({
+				method: 'GET',
+				url: 'https://apis.map.qq.com/ws/place/v1/search?boundary=region(' + encodeURIComponent(region || '全国') + ',0)'
+				+ '&keyword=' + encodeURIComponent(keyword)
+				+ '&page_size=20&key=' + API_KEY
+				+ '&output=jsonp',
+				dataType: 'JSONP'
+			})
+				.done(function (res) {
+					if (res.status !== 0) return reject(new Error(res.message));
+					resolve(res);
+				})
+				.fail(function (err) {
+					reject(new Error(err.statusText));
+				});
+		});
+	}
+
+	function getAddressesByLocation (lat, lng) {
+		return new Promise(function (resolve, reject) {
+			$.ajax({
+				method: 'GET',
+				url: 'https://apis.map.qq.com/ws/geocoder/v1/?location=' + lat + ',' + lng
+				+ '&key=' + API_KEY
+				+ '&get_poi=1&output=jsonp',
+				dataType: 'JSONP'
+			})
+				.done(function (res) {
+					if (res.status !== 0) return reject(new Error(res.message));
+					resolve(res.result);
+				})
+				.fail(function (err) {
+					reject(new Error(err.statusText));
+				});
+		});
+	}
+
+	function renderAddressList (data) {
+		return $('#addressList').html(data.pois.map(function (item) {
+			var isCurrent = item.location.lat === query.lat && item.location.lng === query.lng;
+			return '<div class="item' + (isCurrent ? ' selected' : '') + '" data-action-type="SELECT_ADDRESS" data-lat="' + item.location.lat + '"" data-lng="' + item.location.lng + '">'
+				+ '<h4 class="addr">' + item.title + '</h4>'
+				+ '<p class="road">' + item.address + '</p>'
+				+ '</div>';
+		}).join(''));
+	}
+
+	function initPosition (lat, lng) {
+		var loading = weui.loading('加载中');
+		return getAddressesByLocation(lat, lng)
+			.then(function (res) {
+				loading.hide();
+				renderAddressList(res);
+			})
+			.catch(function (err) {
+				loading.hide();
+				weui.topTips(err.message);
+			});
+	}
+
+	function getLocationAndMarkCenter () {
+		return setMapCenterToCurrentLocation().then(function (location) {
+			initPosition(location.lat, location.lng);
+		});
+	}
+
+	$('#positionBtn').click(getLocationAndMarkCenter);
+
+	// 初始化位置
+	if (query.lat && query.lng) {
+		setMapCenterAndMarkerPosition(query.lat, query.lng);
+		initPosition(query.lat, query.lng);
+	} else {
+		getLocationAndMarkCenter();
+	}
+
+	// 拖动改变位置时重新标点、获取周边地址列表
+	qq.maps.event.addListener(map, 'dragend', function (event) {
+		var location = getMapCenter();
+		var lat = location.lat;
+		var lng = location.lng;
+		setMarkerPosition(lat, lng);
+		initPosition(lat, lng);
+	});
+
+	function renderSearchResult (data) {
+		var addressList = $('#addressList');
+		if (data.cluster && data.cluster.length) {
+			return $('#addressList').html(data.cluster.map(function (item) {
+				return '<div class="item cluster" data-action-type="SEARCH_BY_REGION" data-keyword="' + $('#searchBar input').val() + '" data-region="' + item.title + '">'
+					+ '<h4 class="addr">' + item.title + '（' + item.count + '）</h4>'
+					+ '</div>';
+			}).join(''));
+		}
+		return $('#addressList').html(data.data.map(function (item) {
+			return '<div class="item" data-action-type="SELECT_ADDRESS" data-lat="' + item.location.lat + '"" data-lng="' + item.location.lng + '">'
+				+ '<h4 class="addr">' + item.title + '</h4>'
+				+ '<p class="road">' + item.address + '</p>'
+				+ '</div>';
+		}).join(''));
+	}
+
+	function search (keyword, region) {
+		var loading = weui.loading('搜索中');
+		return searchAddress(keyword, region)
+				.then(function (res) {
+					loading.hide();
+					renderSearchResult(res);
+				})
+				.catch(function (err) {
+					loading.hide();
+					weui.topTips(err.message);
+				});
+	}
+
+	$('#searchBar')
+		// 点击激活输入框
+		.click(function (event) {
+			event.stopPropagation();
+			var inputWrapper = $(this).find('.input-wrapper').addClass('focus');
+			setTimeout(function () {
+				inputWrapper.find('input').focus();
+			}, 100);
+		})
+		// 搜索地址
+		.submit(function onSearchSubmitHandle (event) {
+			event.preventDefault();
+			var value = $(this).find('input').val();
+			if (!value) return;
+			$('#searchBar input').trigger('blur');
+			var loading = weui.loading('搜索中');
+			search(value);
+		})
+		// 输入框失焦样式
+		.find('.input-wrapper input').on('blur', function () {
+			!$(this).val() && $(this).parent().removeClass('focus');
+		});
+	// 点击外部使输入框失焦
+	$(document).click(function () {
+		$('#searchBar input').blur();
+	});
+
+	// 地址列表点击
+	$('#addressList').on('click', '.item', function () {
+		var $this = $(this);
+		var actionType = $this.data('actionType');
+		switch (actionType) {
+			case 'SEARCH_BY_REGION':
+				search($this.data('keyword'), $this.data('region'));
+				break;
+			case 'SELECT_ADDRESS':
+				var lat = $this.data('lat');
+				var lng = $this.data('lng');
+				var addr = $this.find('.addr').text();
+				// 选中了直接跳转
+				if ($this.hasClass('selected')) {
+					return window.location.replace(decodeURIComponent(query.redirect) + '?lat=' +lat
+						+ '&lng=' + lng
+						+ '&addr=' + encodeURIComponent(addr));
+				}
+				$this.addClass('selected').siblings().removeClass('selected');
+				setMapCenterAndMarkerPosition(lat, lng, true);
+				break;
+			default:
+				return;
+		}
+	});
+});
+</script>
+
+</html>
