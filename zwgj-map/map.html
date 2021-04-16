@@ -253,13 +253,15 @@ $(function () {
 	}
 
 	function renderAddressList (data) {
-		return $('#addressList').html(data.pois.map(function (item) {
-			var isCurrent = item.location.lat === query.lat && item.location.lng === query.lng;
-			return '<div class="item' + (isCurrent ? ' selected' : '') + '" data-action-type="SELECT_ADDRESS" data-lat="' + item.location.lat + '"" data-lng="' + item.location.lng + '">'
-				+ '<h4 class="addr">' + item.title + '</h4>'
-				+ '<p class="road">' + item.address + '</p>'
-				+ '</div>';
-		}).join(''));
+		return $('#addressList')
+			.html(data.pois.map(function (item) {
+				var isCurrent = item.location.lat === query.lat && item.location.lng === query.lng;
+				return '<div class="item' + (isCurrent ? ' selected' : '') + '" data-action-type="SELECT_ADDRESS" data-lat="' + item.location.lat + '"" data-lng="' + item.location.lng + '">'
+					+ '<h4 class="addr">' + item.title + '</h4>'
+					+ '<p class="road">' + item.address + '</p>'
+					+ '</div>';
+			}).join(''))
+			.prepend('<div class="item" data-action-type="SELECT_CURRENT_LOCATION"><h4 class="addr">未命名位置</h4><p class="road">使用当前定位</p></div>');
 	}
 
 	function initPosition (lat, lng) {
@@ -278,6 +280,7 @@ $(function () {
 	function getLocationAndMarkCenter () {
 		return setMapCenterToCurrentLocation().then(function (location) {
 			initPosition(location.lat, location.lng);
+			return location;
 		});
 	}
 
@@ -361,6 +364,17 @@ $(function () {
 	$('#addressList').on('click', '.item', function () {
 		var $this = $(this);
 		var actionType = $this.data('actionType');
+
+		function selectAddress (lat, lng, addr) {
+			// 选中了直接跳转
+			if ($this.hasClass('selected')) {
+				return window.location.replace(decodeURIComponent(query.redirect) + '?lat=' +lat
+					+ '&lng=' + lng
+					+ '&addr=' + encodeURIComponent(addr));
+			}
+			$this.addClass('selected').siblings().removeClass('selected');
+		}
+
 		switch (actionType) {
 			case 'SEARCH_BY_REGION':
 				search($this.data('keyword'), $this.data('region'));
@@ -369,14 +383,13 @@ $(function () {
 				var lat = $this.data('lat');
 				var lng = $this.data('lng');
 				var addr = $this.find('.addr').text();
-				// 选中了直接跳转
-				if ($this.hasClass('selected')) {
-					return window.location.replace(decodeURIComponent(query.redirect) + '?lat=' +lat
-						+ '&lng=' + lng
-						+ '&addr=' + encodeURIComponent(addr));
-				}
-				$this.addClass('selected').siblings().removeClass('selected');
+				selectAddress(lat, lng, addr);
 				setMapCenterAndMarkerPosition(lat, lng, true);
+				break;
+			case 'SELECT_CURRENT_LOCATION':
+				setMapCenterToCurrentLocation().then(function (location) {
+					selectAddress(location.lat, location.lng, '未命名位置');
+				});
 				break;
 			default:
 				return;
