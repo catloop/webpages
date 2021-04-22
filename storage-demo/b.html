@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>B</title>
+</head>
+<body>
+    <pre id="container"></pre>
+    <button onclick="onChangeStorageButtonClickHandler()">Change Storage</button>
+    <br />
+    <a href="./c.html">Enter C</a>
+
+    <script>
+    const STORAGE_KEY = 'TEST_SESSION_STORAGE';
+
+    function init() {
+        document.querySelector('#container').innerHTML = window.sessionStorage.getItem(STORAGE_KEY) || '';
+    }
+
+    function onChangeStorageButtonClickHandler() {
+        const count = ~~(JSON.parse(window.sessionStorage.getItem(STORAGE_KEY) || '{}').count);
+        window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+            time: Date.now(),
+            seed: Math.random(),
+            count: count + 1
+        }, null, 4));
+        init();
+    }
+
+    window.onload = function() {
+        init();
+    };
+    </script>
+</body>
+</html>
