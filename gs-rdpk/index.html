@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="telphone=no, email=no">
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-touch-fullscreen" content="yes">
+	<meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+	<title>甘肃联通</title>
+	<link rel="stylesheet" href="./css/swiper.min.css">
+	<script src ="./js/flexible.js"></script>
+	<script src="./js/swiper.min.js"></script>
+	<link rel="stylesheet" href="./css/common.css">
+	<link rel="stylesheet" href="./css/index.css">
+</head>
+
+<body class="index">
+	<div class="page">
+		<div class="lucky-dog">
+			<div class="swiper-wrapper">
+				<div class="swiper-slide">用户130****0370成功瓜分补贴</div>
+				<div class="swiper-slide">用户130****0370成功瓜分补贴</div>
+				<div class="swiper-slide">用户130****0370成功瓜分补贴</div>
+				<div class="swiper-slide">用户130****0370成功瓜分补贴</div>
+				<div class="swiper-slide">用户130****0370成功瓜分补贴</div>
+			</div>
+		</div>
+
+		<a href="./rule.html" class="btn-rule">活动规则</a>
+
+		<main class="main">
+			<!-- <div class="redpack redpack-normal">
+				<div class="wrapper">
+					<button class="btn-open"></button>
+					<p class="join-count">已有<span class="num">233</span>人参与活动</p>
+				</div>
+			</div> -->
+			
+			<div class="redpack redpack-opened">
+				<div class="wrapper">
+					<h3 class="title">恭喜您获得517补贴</h3>
+					<div class="content">
+						<p class="hl">最高可得<span class="num">X.XX</span>元</p>
+						邀请新朋友越多 现金红包越大哦
+					</div>
+					<div class="actions">
+						<!-- <button class="btn">再次发起</button> -->
+						<button class="btn">去分享</button>
+						<p class="expire">您的补贴 <time class="time">22:31:49</time> 后过期</p>
+					</div>
+					<p class="join-count">已有<span class="num">233</span>人参与活动</p>
+				</div>
+			</div>
+		</main>
+	</div>
+</body>
+
+<script src="js/jquery-3.5.1.min.js"></script>
+<script src="js/popup.js"></script>
+<script type="text/javascript">
+$(function() {
+	/** 倒计时
+	 * @param {HTMLElement | jQuery} element 要显示倒计时的目标元素
+	 * @param {Number} time 倒计时毫秒
+	 * @returns {Promise<void>} 倒计时完成后 resolve
+	*/
+	var countDown = function(element, time) {
+		var $element = $(element);
+		var time = time;
+		function _formatTimeRange(time) {
+			var _time = time;
+			var SECOND = 1000;
+			var MINUTE = SECOND * 60;
+			var HOUR = MINUTE * 60;
+			var hours = ~~(_time / HOUR);
+			_time -= (HOUR * hours);
+			var minutes = ~~(_time / MINUTE);
+			_time -= (MINUTE * minutes);
+			var seconds = ~~(_time / SECOND);
+			_time -= (SECOND * seconds);
+			function _fillZero(num) {
+				var LENGTH = 2;
+				var str = num + '';
+				return str.length < LENGTH ? (Array(LENGTH - str.length).fill('0').join('') + str) : str;
+			}
+			return [hours, minutes, seconds].map(function(value) {
+				return _fillZero(value);
+			}).join(':');
+		}
+		return new Promise(function(resolve) {
+			function _countDown() {
+				if (time <= 0) return resolve();
+				$element.text(_formatTimeRange(time));
+				time -= 1000;
+				setTimeout(_countDown, 1000);
+			}
+			_countDown();
+		});
+	};
+
+	countDown($('.redpack-opened .expire .time'), 3000).then(function() { $('.redpack-opened .expire').text('您的补贴已过期 请重新发起'); });
+
+	new Swiper('.lucky-dog', {
+		direction: 'vertical',
+		loop: true,
+		autoplay: {
+			delay: 1000
+		},
+		noSwiping: true,
+		allowTouchMove: false
+    });
+
+	/** @see {@link file://./js/popup.js} */
+	$.confirm('长按识别关注二维码关注<br />甘肃联通<br><img src="./images/common/content-qrcode.png" style="width: 2.426667rem;height: 2.426667rem; margin-top: 0.4rem;">', {
+		disableConfirm: true,
+		disableCancel: true
+	});
+});
+</script>
+
+</html>
