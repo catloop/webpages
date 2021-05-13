@@ -1,0 +1,83 @@
+.feedbackSubmitWrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    min-height: 100vh;
+    background-color: #f7f8fa;
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: 2rem;
+        top: .15rem;
+        z-index: 1; 
+        width: 1.56rem;
+        height: 1.26rem;
+        background-image: url('../images/feedback.submit/bg_form_ ornamental.png');
+        background-repeat: no-repeat;
+        background-position: 0 0;
+        background-size: 1.56rem 1.26rem;
+    }
+
+    .inputWrapper {
+        padding: 0.24rem;
+        margin: .87rem .18rem 0 .18rem;
+        border-radius: 0.08rem;
+        background-color: #fff;
+
+        .subTitle {
+            margin: 0;
+            font-size: 0.16rem;
+            line-height: 0.22rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .input {
+            height: 2.37rem;
+            margin-top: 0.24rem;
+            display: flex;
+            flex-direction: column;
+            border-radius: 0.1rem;
+            background-color: #f7f7f7;
+
+            textarea {
+                flex: 1;
+                border-width: 0;
+                resize: none;
+                outline: none;
+                background-color: transparent;
+                margin: 0.18rem 0.18rem 0 0.18rem;
+                font-size: 0.12rem;
+                line-height: 0.18rem;
+                color: #333;
+
+                &::-webkit-input-placeholder {
+                    color: #999;
+                }
+            }
+
+            &__counter {
+                margin: .12rem;
+                font-size: 0.12rem;
+                line-height: 0.18rem;
+                font-weight: 500;
+                text-align: right;
+                color: #d9d9d9;
+            }
+        }
+    }
+
+    .btnSubmit {
+        border-width: 0;
+        margin: 0.32rem 0.18rem 0.89rem 0.18rem;
+        height: 0.46rem;
+        border-radius: 0.23rem;
+        font-size: 0.16rem;
+        line-height: 0.22rem;
+        font-weight: 500;
+        text-align: center;
+        color: #fff;
+    }
+}

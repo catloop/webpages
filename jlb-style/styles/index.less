@@ -1,0 +1,294 @@
+.mineWrap {
+    width: 100vw;
+    min-height: 100vh;
+    background-color: #fff;
+
+    .header {
+      display: flex;
+      padding: 0.04rem 0.24rem;
+
+      &__avatar {
+        position: relative;
+        width: 0.9rem;
+        height: 0.9rem;
+
+        img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+        }
+
+      }
+
+      &__gender {
+        position: absolute;
+        width: 0.24rem;
+        height: 0.24rem;
+        right: 0;
+        bottom: 0;
+        background-repeat: no-repeat;
+        background-position: 0 0;
+        background-size: .24rem .24rem;
+
+        &--male {
+          background-image: url('../images/index/icon_male.png');
+        }
+
+        &--female {
+          background-image: url('../images/index/icon_female.png');
+        }
+      }
+
+      &__leftContainer {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      &__nickname {
+        margin-top: .2rem;
+        font-size: .21rem;
+        line-height: .24rem;
+        font-weight: 600;
+        white-space: nowrap;
+        max-width: 9em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #333;
+      }
+
+      &__buttonsContainer {
+        display: flex;
+        margin-top: .16rem;
+      }
+
+      &__button {
+        border-width: 0;
+        height: 0.28rem;
+        padding: 0 0.12rem;
+        margin-left: 0.12rem;
+        border-radius: 0.14rem;
+        font-size: 0.12rem;
+        line-height: 0.28rem;
+        color: #999;
+        background-color: #f4f7fb;
+
+        &:first-child {
+          margin-left: 0;
+        }
+      }
+    }
+
+    .children {
+      margin-top: 0.56rem;
+      width: 100%;
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .childrenWrapper {
+        display: flex;
+        width: fit-content; 
+        padding: 0 0.24rem;
+  
+        .child {
+          box-sizing: border-box;
+          width: 2rem;
+          height: 1.2rem;
+          padding: 0.24rem 0.16rem;
+          margin-left: 0.12rem;
+          border-radius: 0.08rem;
+          background-color: #f4f7fb;
+
+          &:first-child {
+            margin-left: 0;
+          }
+          
+          &__top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+  
+          &__name {
+            max-width: 9em;
+            font-size: 0.14rem;
+            line-height: 0.2rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #022047;
+          }
+  
+          &__more {
+            width: 0.2rem;
+            height: 0.16rem;
+            margin-right: 0;
+            margin-left: auto;
+            border-width: 0;
+            background-image: url('../images/index/icon_more.png');
+            background-repeat: no-repeat;
+            background-position: 0 0;
+            background-size: 0.2rem 0.16rem;
+          }
+  
+          &__counts {
+            display: flex;
+            margin-top: .16rem;
+            margin-right: -0.16rem;
+          }
+  
+          &__count {
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+
+            &__num {
+              font-size: 0.16rem;
+              line-height: 0.18rem;
+              color: #022047;
+              font-weight: 700;
+            }
+  
+            &__label {
+              line-height: 0.18rem;
+              font-size: 0.11rem;
+              color: #999da6;
+            }
+          }
+
+          &--add {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--theme-color);
+  
+            &::before {
+              content: '+';
+              margin-top: -0.01rem;
+              font-size: 0.16rem;
+              line-height: 0.22rem;
+              margin-right: 0.04rem;
+            }
+  
+            &::after {
+              content: '添加孩子';
+              margin-top: 0.01rem;
+              font-size: 0.14rem;
+              line-height: 0.2rem;
+            }
+          }
+        }
+      }      
+    }
+
+    .subTitle {
+      margin: 0 0.36rem;
+      font-size: 0.14rem;
+      line-height: 0.26rem;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .orders {
+      .subTitle {
+        margin-top: 0.36rem;
+      }
+
+      .ordersWrapper {
+        display: flex;
+        margin-top: 0.32rem;
+      }
+
+      &__cated {
+        flex: 1;
+        display: flex;
+        padding: 0 0.12rem;
+      }
+
+      &__all {
+        display: flex;
+
+        &::before {
+          content: '';
+          width: 1px;
+          height: .48rem;
+          background-color: #cdcfd3;
+        }
+
+        .orders__cate {
+          margin: 0 0.32rem;
+
+          &__label {
+            color: #333;
+          }
+        }
+      }
+
+      &__cate {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        &__icon {
+          display: block;
+          width: 0.32rem;
+          height: 0.32rem;
+        }
+
+        &__label {
+            margin-top: 0.04rem;
+            font-size: 0.11rem;
+            line-height: 0.18rem;
+            color: #999da6;
+        }
+      }
+    }
+
+    .ad {
+      display: block;
+      width: 3.39rem;
+      height: .82rem;
+      margin: 0.27rem 0.18rem 0 0.18rem;
+    }
+
+    .apps {
+      .subTitle {
+        margin-top: 0.32rem;
+      }
+
+      .appsWrapper {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0.36rem .07rem 0 .07rem;
+
+        .app {
+          display: flex;
+          width: 25%;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 0.24rem;
+
+          &__icon {
+            display: flex;
+            width: 0.32rem;
+            height: 0.32rem;
+          }
+
+          &__label {
+            margin-top: 0.05rem;
+            font-size: 0.11rem;
+            line-height: 0.18rem;
+            color: #666;
+          }
+        }
+      }
+    }
+  }
+  
