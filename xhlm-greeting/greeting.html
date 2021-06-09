@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="format-detection" content="telphone=no, email=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+    <title>欢迎语</title>
+    <script src ="./js/flexible.js"></script>
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/greeting.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/vant/2.12.15/index.min.css" rel="stylesheet">
+</head>
+
+<body class="greeting">
+    <div id="app"></div>
+
+    <script type="text/x-template" id="page-template">
+        <div class="page" ref="scrollContainer">
+            <div class="bottom-bar">
+                <button
+                    @click="onCancelBtnClickHandle"
+                    class="btn-cancel btn btn-accent btn-large btn-rounded"
+                >取消</button>
+                <button
+                    @click="onSaveBtnClickHandler"
+                    class="btn-save btn btn-primary btn-large btn-rounded"
+                >保存</button>
+            </div>
+
+            <div class="panel scope-panel">
+                <h3 class="panel-title required">使用范围</h3>
+                <Scopes
+                    @select-scope="onSelectScopeHandler"
+                />
+                <SelectStaffAndDepartmentPopup
+                    :show="showSelectStaffAndDepartmentPopup"
+                    @open="onSelectStaffAndDepartmentPopupOpenHandler"
+                    @close="onSelectStaffAndDepartmentPopupCloseHandler"
+                />
+                <SelectTrenchPopup
+                    :show="showSelectTrenchPopup"
+                    @open="onSelectTrenchPopupOpenHandler"
+                    @close="onSelectTrenchPopupCloseHandler"
+                />
+            </div>
+
+            <div class="panel content-panel">
+                <h3 class="panel-title required">欢迎语</h3>
+
+                <GreetingContent
+                    :value="greetingContent"
+                    @change="setGreetingContent"
+                />
+
+                <GreetingAttachments
+                    :value="greetingAttachments"
+                    @change="setGreetingAttachments"
+                />
+            </div>
+
+            <div class="panel dayparting-control-panel">
+                <h3 class="panel-title">分时段欢迎语</h3>
+                <VanSwitch
+                    :value="hasDaypartingRules"
+                    @click="onDaypartingControlClickHandler"
+                    class="switch"
+                />
+            </div>
+
+            <div
+                v-for="(rule, index) in daypartingRules"
+                class="panel dayparting-rule-panel"
+            >
+                <h3 class="panel-title required">
+                    时段{{ (index + 1) | zhCN }}
+                    <button
+                        @click="onDeleteRuleBtnClickHandler(index)"
+                        class="delete-rule-btn"
+                    >删除</button>
+                </h3>
+
+                <TimeRange
+                    :value="rule.timeRange"
+                    @confirm="onTimeRangeConfirmHandler(index, $event)"
+                />
+                
+                <GreetingContent
+                    :value="rule.content"
+                    @change="onDaypartingContentChangeHandler(index, $event)"
+                />
+
+                <GreetingAttachments
+                    :value="rule.attachments"
+                    @change="onDaypartingAttachmentsChangeHandler(index, $event)"
+                />
+            </div>
+            
+            <button
+                v-if="hasDaypartingRules"
+                @click="onAddRuleBtnClickHandler"
+                class="add-rule-btn"
+            >添加时间段</button>
+        </div>
+    </script>
+    
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.9/vue.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vuex/3.6.2/vuex.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vant/2.12.15/vant.min.js"></script>
+    <script src="./js/http-vue-loader.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/qs/6.10.1/qs.min.js"></script>
+    <script src="./js/chinese-numerals.js"></script>
+    <script src="./js/async-validator.js"></script>
+    <script src="./js/mock/api.mock.js"></script>
+    <script src="./js/store.js"></script>
+    <script src="./js/utils.js"></script>
+    <script>
+    (function() {
+        /**
+         * @typedef {'BY_STAFF_AND_DEPARTMENT' | 'BY_TRENCH'} ScopeType 范围类型
+         * - BY_STAFF_AND_DEPARTMENT: 按部门及员工
+         * - BY_TRENCH: 按渠道
+         */
+
+        /**
+         * @typedef TimeRange 时间范围
+         * @property {(1 | 2 | 3 | 4 | 5 | 6 | 0)[]} days 星期
+         * @property {string} startTime
+         * @property {string} endTime
+        */
+
+        /**
+         * @typedef Attachment
+         * @property {'image' | 'anchor' | 'mini-program' ｜ 'service'} type
+         * @property {string} cover
+        */
+
+        var setPageTitle = window['__UTILS'].setPageTitle;
+
+        /**
+         * 获取默认分时段规则配置对象
+        */
+        function getDefaultDayPartingRule() {
+            return {
+                content: '',
+                attachment: [],
+                timeRange: {
+                    days: [],
+                    startTime: moment(Date.now()).format('HH:mm'),
+                    endTime: moment(Date.now()).format('HH:mm')
+                }
+            };
+        }
+
+        new Vue({
+            store: window['__VUEX_STORE'],
+            template: '#page-template',
+            el: '#app',
+            components: {
+                Scopes: httpVueLoader('./components/Scopes.vue'),
+                SelectStaffAndDepartmentPopup: httpVueLoader('./components/SelectStaffAndDepartmentPopup.vue'),
+                SelectTrenchPopup: httpVueLoader('./components/SelectTrenchPopup.vue'),
+                GreetingContent: httpVueLoader('./components/GreetingContent.vue'),
+                TimeRange: httpVueLoader('./components/TimeRange.vue'),
+                GreetingAttachments: httpVueLoader('./components/GreetingAttachments.vue')
+            },
+            filters: {
+                /**
+                 * 将阿拉伯数字转换为中文
+                 * @param {number | string} 数值或数字字符串
+                 * @returns {string}
+                */
+                zhCN: function(value) {
+                    return chineseNumerals.converter(value);
+                }
+            },
+            computed: Object.assign(Vuex.mapState({
+                greeting: function(state) {
+                    return state.greeting;
+                },
+                greetingContent: function(state) {
+                    return state.greeting.content;
+                },
+                daypartingRules: function(state) {
+                    return state.greeting.daypartingRules;
+                },
+                greetingAttachments: function(state) {
+                    return state.greeting.attachments;
+                }
+            }), {
+                actionType: {
+                    get: function() {
+                        return this.$_actionType;
+                    },
+                    /**
+                     * @typedef {'add' | 'edit'} ActionType 
+                     * @param {ActionType} value 操作类型
+                     * @returns {ActionType}
+                    */
+                    set: function(value) {
+                        setPageTitle(({
+                            'add': '添加',
+                            'edit': '编辑'
+                        })[value] + '欢迎语');
+                        return this.$_actionType = value;
+                    }
+                },
+                hasDaypartingRules: function() {
+                    return !!this.daypartingRules.length;
+                }
+            }),
+            data: function() {
+                return {
+                    initPageTitle: document.title,
+                    $_actionType: '',
+                    greetingId: '',
+                    showSelectStaffAndDepartmentPopup: false,
+                    showSelectTrenchPopup: false,
+                    daypartingRulesBackup: []
+                };
+            },
+            methods: Object.assign(
+                Vuex.mapMutations({
+                    setGreeting: 'SET_GREETING',
+                    setDaypartingRules: 'SET_GREETING_DAYPARTING_RULES',
+                    setGreetingContent: 'SET_GREETING_CONTENT',
+                    setGreetingAttachments: 'SET_GREETING_ATTACHMENTS'
+                }),
+                Vuex.mapActions({
+                    getStaffAndDepartment: 'GET_STAFF_AND_DEPARTMENT',
+                    getTrenchs: 'GET_TRENCHS',
+                    getContentLibrary: 'GET_CONTENT_LIBRARY'
+                }),
+                {
+                /**
+                 * 加载页面需要的数据
+                 * @returns {Promise<void>}
+                */
+                initAsyncData: function() {
+                    var toast = vant.Toast.loading('加载中');
+                    return Promise.all([this.getStaffAndDepartment(), this.getTrenchs(), this.getContentLibrary()])
+                        .then(function() {
+                            toast.clear();
+                        });
+                },
+                /**
+                 * 加载编辑数据
+                 * @returns {Promise<void>}
+                */
+                getGreeting: function() {
+                    var _this = this;
+                    // 加载编辑数据
+                    var toast = vant.Toast.loading('加载中');
+                    return axios.get(window['__MOCK_API'].getGreetingById, {
+                        params: {
+                            id: _this.id
+                        }
+                    })
+                        .then(function(response) {
+                            toast.clear();
+                            if (!response.data.success) return vant.Toast.fail(response.data.alertMsg);
+                            _this.setGreeting(response.data.data);
+                        });
+                },
+                /**
+                 * 恢复初始页面标题
+                 * @returns {void}
+                */
+                restorePageTitle: function() {
+                    setPageTitle(this.initPageTitle);
+                },
+                /**
+                 * 返回前页
+                 * @returns {void}
+                */
+                onCancelBtnClickHandle: function() {
+                    window.history.back();
+                },
+                /**
+                 * 选择具体范围，打开对应的的范围选择弹层
+                 * @param {ScopeType} scopeType 范围类型
+                */
+                onSelectScopeHandler: function(scopeType) {
+                    switch (scopeType) {
+                        case 'BY_STAFF_AND_DEPARTMENT':
+                            this.showSelectStaffAndDepartmentPopup = true;
+                            break;
+                        case 'BY_TRENCH':
+                            this.showSelectTrenchPopup = true;
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                /**
+                 * 选择部门 / 员工弹层开启
+                 * @returns {void}
+                */
+                onSelectStaffAndDepartmentPopupOpenHandler: function() {
+                    this.showSelectStaffAndDepartmentPopup = true;
+                    setPageTitle('选择部门 / 员工');
+                },
+                /**
+                 * 选择部门 / 员工弹层关闭
+                 * @returns {void}
+                */
+                onSelectStaffAndDepartmentPopupCloseHandler: function() {
+                    this.showSelectStaffAndDepartmentPopup = false;
+                    this.restorePageTitle();
+                },
+                /**
+                 * 选择渠道弹层开启
+                 * @returns {void}
+                */
+                onSelectTrenchPopupOpenHandler: function() {
+                    this.showSelectTrenchPopup = true;
+                    setPageTitle('选择渠道');
+                },
+                /**
+                 * 选择渠道弹层关闭
+                 * @returns {void}
+                */
+                onSelectTrenchPopupCloseHandler: function() {
+                    this.showSelectTrenchPopup = false;
+                    this.restorePageTitle();
+                },
+                /**
+                 * 备份当前分时段规则
+                */
+                backupDaypartingRules: function() {
+                    this.daypartingRulesBackup = [].concat(this.daypartingRules);
+                },
+                /**
+                 * 恢复备份的分时段规则
+                */
+                restoreDaypartingRules: function() {
+                    this.setDaypartingRules([].concat(this.daypartingRulesBackup));
+                },
+                /**
+                 * 点击分时段欢迎语开关
+                 * @returns {void}
+                */
+                onDaypartingControlClickHandler: function() {
+                    // 有规则，备份，然后置空
+                    if (this.hasDaypartingRules) {
+                        this.backupDaypartingRules();
+                        this.setDaypartingRules([]);
+                        return;
+                    }
+                    // 没有规则，但有备份，恢复备份
+                    if (this.daypartingRulesBackup.length) return this.restoreDaypartingRules();
+                    // 没有规则也没有备份，添加一条默认规则
+                    this.addRule();
+                },
+                /**
+                 * 添加时间段
+                 * @returns {void}
+                */
+                addRule: function() {
+                    this.setDaypartingRules([].concat(this.daypartingRules, getDefaultDayPartingRule()));
+                },
+                /**
+                 * 点击添加时间段按钮
+                 * @return {void}
+                */
+                onAddRuleBtnClickHandler: function (){
+                    var _this = this;
+                    this.addRule();
+                    // 添加完滚动到底部
+                    setTimeout(function() {
+                        var scrollContainer = document.documentElement;
+                        if (!scrollContainer) return;
+                        scrollContainer.scrollTo({
+                            top: scrollContainer.scrollHeight - scrollContainer.clientHeight,
+                            behavior: 'smooth'
+                        });
+                    });
+                },
+                /**
+                 * 点击删除时段按钮
+                 * @return {void}
+                */
+                onDeleteRuleBtnClickHandler: function(index) {
+                    this.setDaypartingRules(this.daypartingRules.filter(function(rule, i) {
+                        return i !== index;
+                    }));
+                    this.backupDaypartingRules();
+                },
+                /**
+                 * 获取临时的分时段规则数据
+                */
+                getDaypartingRules: function() {
+                    return [].concat(this.daypartingRules);
+                },
+                /**
+                 * 分时段规则确认选择时间
+                 * @param {number} 规则下标
+                 * @param {TimeRange} timeRange 时间段配置对象
+                 * @returns {void}
+                */
+                onTimeRangeConfirmHandler: function(index, timeRange) {
+                    var daypartingRules = this.getDaypartingRules();
+                    daypartingRules[index].timeRange = timeRange;
+                    this.setDaypartingRules(daypartingRules);
+                },
+                /**
+                 * 分时段规则内容变化，保存
+                 * @param {number} index 规则下标
+                 * @param {string} content 规则下标
+                 * @returns {void}
+                */
+                onDaypartingContentChangeHandler: function(index, content) {
+                    var daypartingRules = this.getDaypartingRules();
+                    daypartingRules[index].content = content;
+                    this.setDaypartingRules(daypartingRules);
+                },
+                /**
+                 * 分时段素材列表改变改变
+                 * @param {Attachment[]} attachments 素材列表
+                 * @returns {void}
+                */
+                onDaypartingAttachmentsChangeHandler: function(index, attachments) {
+                    var daypartingRules = this.getDaypartingRules();
+                    daypartingRules[index].attachments = attachments;
+                    this.setDaypartingRules(daypartingRules);
+                },
+                /**
+                 * 点击保存按钮
+                 * @returns {void}
+                */
+                onSaveBtnClickHandler: function() {
+                    var toast = vant.Toast.loading('正在保存');
+                    var data = this.greeting;
+                    console.log(JSON.stringify(this.greeting, null, 4));
+                    axios.get(window['__MOCK_API'].successNoData, {
+                        data: data
+                    }).then(function(response) {
+                        toast.clear()
+                        if (!response.data.success) return vant.Toast.fail(response.data.alertMsg);
+                        vant.Toast.success({
+                            message: '保存成功',
+                            overlay: true
+                        });
+                        setTimeout(function() {
+                            window.history.back();
+                        }, 1000);
+                    });
+                }
+            }),
+            mounted: function() {
+                var _this = this;
+
+                // 加载异步数据
+                this.initAsyncData()
+                    .then(function() {
+                        // 记录入参
+                        var query = Qs.parse(window.location.search.substr(1));
+                        if (query.action !== 'edit') return;
+                        this.actionType = query.action;
+                        this.id = query.id;
+                        _this.getGreeting();
+                    });
+            }
+        });
+    })();
+    </script>
+</body>
+
+</html>

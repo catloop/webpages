@@ -1,0 +1,443 @@
+{
+    "success": true,
+    "statusCode": 200,
+    "alertMsg": "操作成功",
+    "data": [
+        {
+            "id": 1,
+            "type": "department",
+            "name": "辽宁移动",
+            "children": [
+                {
+                    "id": 3,
+                    "type": "department",
+                    "name": "辽宁移动阴间分公司",
+                    "children": [
+                        {
+                            "id": 15,
+                            "name": "总经办",
+                            "type": "department",
+                            "children": [
+                                {
+                                    "id": 21,
+                                    "name": "天齐仁圣大帝",
+                                    "type": "staff",
+                                    "avatar": "https://via.placeholder.com/63x63"
+                                },
+                                {
+                                    "id": 22,
+                                    "name": "北阴酆都大帝",
+                                    "type": "staff",
+                                    "avatar": "https://via.placeholder.com/63x63"
+                                },
+                                {
+                                    "id": 23,
+                                    "name": "五方鬼帝",
+                                    "type": "staff",
+                                    "avatar": "https://via.placeholder.com/63x63"
+                                },
+                                {
+                                    "id": 24,
+                                    "name": "罗酆六天",
+                                    "type": "staff",
+                                    "avatar": "https://via.placeholder.com/63x63"
+                                },
+                                {
+                                    "id": 25,
+                                    "name": "地藏王菩萨",
+                                    "type": "staff",
+                                    "avatar": "https://via.placeholder.com/63x63"
+                                },
+                                {
+                                    "id": 26,
+                                    "name": "十殿阎罗",
+                                    "type": "staff",
+                                    "avatar": "https://via.placeholder.com/63x63"
+                                }
+                            ]
+                        },
+                        {
+                            "id": 16,
+                            "name": "捉鬼办",
+                            "type": "department",
+                            "children": [
+                                {
+                                    "id": 27,
+                                    "name": "驱魔真君钟馗帝君",
+                                    "type": "staff",
+                                    "avatar": "https://via.placeholder.com/63x63"
+                                }
+                            ]
+                        },
+                        {
+                            "id": 17,
+                            "name": "轮回办",
+                            "type": "department",
+                            "children": [
+                                {
+                                    "id": 28,
+                                    "name": "孟婆",
+                                    "type": "staff",
+                                    "avatar": "https://via.placeholder.com/63x63"
+                                },
+                                {
+                                    "id": 34,
+                                    "name": "天人道",
+                                    "type": "department",
+                                    "children": [
+                                        {
+                                            "id": 35,
+                                            "name": "欲界天",
+                                            "type": "department",
+                                            "children": []
+                                        },
+                                        {
+                                            "id": 36,
+                                            "name": "色界天",
+                                            "type": "department",
+                                            "children": []
+                                        },
+                                        {
+                                            "id": 37,
+                                            "name": "无色界天",
+                                            "type": "department",
+                                            "children": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": 29,
+                                    "name": "阿修罗道",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 30,
+                                    "name": "人道",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 31,
+                                    "name": "畜生道",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 32,
+                                    "name": "饿鬼道",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 33,
+                                    "name": "地狱道",
+                                    "type": "department",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": 18,
+                            "name": "勾魂办",
+                            "type": "department",
+                            "children": [
+                                {
+                                    "id": 38,
+                                    "name": "黑无常",
+                                    "type": "staff",
+                                    "avatar": "https://via.placeholder.com/63x63"
+                                },
+                                {
+                                    "id": 39,
+                                    "name": "白无常",
+                                    "type": "staff",
+                                    "avatar": "https://via.placeholder.com/63x63"
+                                }
+                            ]
+                        },
+                        {
+                            "id": 19,
+                            "name": "酆都城",
+                            "type": "department",
+                            "children": [
+                                {
+                                    "id": 40,
+                                    "name": "法务部",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 41,
+                                    "name": "技术部",
+                                    "type": "department",
+                                    "children": [
+                                        {
+                                            "id": 42,
+                                            "name": "技术总监",
+                                            "type": "department",
+                                            "children": [
+                                                {
+                                                    "id": 48,
+                                                    "name": "王大锤",
+                                                    "type": "staff",
+                                                    "avatar": "https://via.placeholder.com/63x63"
+                                                },
+                                                {
+                                                    "id": 49,
+                                                    "name": "李四毛",
+                                                    "type": "staff",
+                                                    "avatar": "https://via.placeholder.com/63x63"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": 43,
+                                            "name": "技术经理",
+                                            "type": "department",
+                                            "children": [
+                                                {
+                                                    "id": 50,
+                                                    "name": "王狗剩",
+                                                    "type": "staff",
+                                                    "avatar": "https://via.placeholder.com/63x63"
+                                                },
+                                                {
+                                                    "id": 51,
+                                                    "name": "徐二虎",
+                                                    "type": "staff",
+                                                    "avatar": "https://via.placeholder.com/63x63"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": 44,
+                                            "name": "架构组",
+                                            "type": "department",
+                                            "children": [
+                                                {
+                                                    "id": 52,
+                                                    "name": "白毛蛋",
+                                                    "type": "staff",
+                                                    "avatar": "https://via.placeholder.com/63x63"
+                                                },
+                                                {
+                                                    "id": 53,
+                                                    "name": "黄四狼",
+                                                    "type": "staff",
+                                                    "avatar": "https://via.placeholder.com/63x63"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": 45,
+                                            "name": "前端组",
+                                            "type": "department",
+                                            "children": [
+                                                {
+                                                    "id": 54,
+                                                    "name": "法克鱿",
+                                                    "type": "staff",
+                                                    "avatar": "https://via.placeholder.com/63x63"
+                                                },
+                                                {
+                                                    "id": 55,
+                                                    "name": "尾申鲸",
+                                                    "type": "staff",
+                                                    "avatar": "https://via.placeholder.com/63x63"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": 46,
+                                            "name": "后端组",
+                                            "type": "department",
+                                            "children": [
+                                                {
+                                                    "id": 56,
+                                                    "name": "七枷社",
+                                                    "type": "staff",
+                                                    "avatar": "https://via.placeholder.com/63x63"
+                                                },
+                                                {
+                                                    "id": 57,
+                                                    "name": "八神庵",
+                                                    "type": "staff",
+                                                    "avatar": "https://via.placeholder.com/63x63"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": 47,
+                                            "name": "运维组",
+                                            "type": "department",
+                                            "children": [
+                                                {
+                                                    "id": 58,
+                                                    "name": "杜腊军",
+                                                    "type": "staff",
+                                                    "avatar": "https://via.placeholder.com/63x63"
+                                                },
+                                                {
+                                                    "id": 59,
+                                                    "name": "冯屌刚",
+                                                    "type": "staff",
+                                                    "avatar": "https://via.placeholder.com/63x63"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": 20,
+                            "name": "十八层地狱",
+                            "type": "department",
+                            "children": [
+                                {
+                                    "id": 60,
+                                    "name": "拔舌地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 61,
+                                    "name": "剪刀地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 62,
+                                    "name": "铁树地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 63,
+                                    "name": "孽镜地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 64,
+                                    "name": "蒸笼地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 65,
+                                    "name": "铜柱地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 66,
+                                    "name": "刀山地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 67,
+                                    "name": "冰山地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 68,
+                                    "name": "油锅地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 69,
+                                    "name": "牛坑地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 70,
+                                    "name": "石压地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 71,
+                                    "name": "舂臼地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 72,
+                                    "name": "血池地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 73,
+                                    "name": "枉死地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 74,
+                                    "name": "磔刑地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 75,
+                                    "name": "火山地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 76,
+                                    "name": "石磨地狱",
+                                    "type": "department",
+                                    "children": []
+                                },
+                                {
+                                    "id": 77,
+                                    "name": "刀锯地狱",
+                                    "type": "department",
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 11,
+                    "name": "张三",
+                    "type": "staff",
+                    "avatar": "https://via.placeholder.com/63x63"
+                },
+                {
+                    "id": 12,
+                    "name": "李四",
+                    "type": "staff",
+                    "avatar": "https://via.placeholder.com/63x63"
+                },
+                {
+                    "id": 13,
+                    "name": "王五",
+                    "type": "staff",
+                    "avatar": "https://via.placeholder.com/63x63"
+                },
+                {
+                    "id": 14,
+                    "name": "赵六",
+                    "type": "staff",
+                    "avatar": "https://via.placeholder.com/63x63"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "type": "department",
+            "name": "吉林移动",
+            "children": []
+        }
+    ]
+}

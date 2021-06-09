@@ -1,0 +1,126 @@
+{
+    "success": true,
+    "statusCode": 200,
+    "alertMsg": "操作成功",
+    "data": [
+        {
+            "id": 1,
+            "creator": "张珊",
+            "createTime": 1619065200000,
+            "content": "您好，欢迎添加专属客服，第一时间为您服务！目前活动10元10GB流量火热办理中.… 还有更多手机优惠套餐等你来抢购！亲亲点开链接即可购买哦～",
+            "attachments": [
+                {
+                    "type": "image",
+                    "cover": "https://via.placeholder.com/145x145"
+                },
+                {
+                    "type": "anchor",
+                    "cover": "https://via.placeholder.com/145x145",
+                    "title": "网页链接"
+                },
+                {
+                    "type": "mini-program",
+                    "cover": "https://via.placeholder.com/145x145",
+                    "title": "小程序"
+                }
+            ],
+            "scopeType": "staff_and_department",
+            "scopes": [
+                {
+                    "id": 1,
+                    "name": "王晓",
+                    "type": "staff"
+                },
+                {
+                    "id": 2,
+                    "name": "业务部",
+                    "type": "department"
+                }
+            ],
+            "scopeCount": 3500,
+            "isDayparting": true
+        },
+        {
+            "id": 2,
+            "creator": "张珊",
+            "createTime": 1619065200000,
+            "content": "您好，欢迎添加专属客服，第一时间为您服务！目前活动10元10GB流量火热办理中.… 还有更多手机优惠套餐等你来抢购！亲亲点开链接即可购买哦～",
+            "attachments": [
+                {
+                    "type": "image",
+                    "cover": "https://via.placeholder.com/145x145"
+                },
+                {
+                    "type": "anchor",
+                    "cover": "https://via.placeholder.com/145x145",
+                    "title": "网页链接"
+                },
+                {
+                    "type": "mini-program",
+                    "cover": "https://via.placeholder.com/145x145",
+                    "title": "小程序"
+                },
+                {
+                    "type": "anchor",
+                    "cover": "https://via.placeholder.com/145x145",
+                    "title": "网页链接"
+                },
+                {
+                    "type": "mini-program",
+                    "cover": "https://via.placeholder.com/145x145",
+                    "title": "小程序"
+                },
+                {
+                    "type": "anchor",
+                    "cover": "https://via.placeholder.com/145x145",
+                    "title": "网页链接"
+                },
+                {
+                    "type": "mini-program",
+                    "cover": "https://via.placeholder.com/145x145",
+                    "title": "小程序"
+                },
+                {
+                    "type": "anchor",
+                    "cover": "https://via.placeholder.com/145x145",
+                    "title": "网页链接"
+                },
+                {
+                    "type": "mini-program",
+                    "cover": "https://via.placeholder.com/145x145",
+                    "title": "小程序"
+                }
+            ],
+            "scopeType": "trench",
+            "scopes": [
+                {
+                    "id": 1,
+                    "name": "王晓",
+                    "type": "trench"
+                },
+                {
+                    "id": 2,
+                    "name": "业务部",
+                    "type": "trench"
+                },
+                {
+                    "id": 3,
+                    "name": "客户经理部",
+                    "type": "trench"
+                },
+                {
+                    "id": 4,
+                    "name": "杜腊军",
+                    "type": "trench"
+                },
+                {
+                    "id": 5,
+                    "name": "搞基部",
+                    "type": "trench"
+                }
+            ],
+            "scopeCount": 78,
+            "isDayparting": false
+        }
+    ]
+}
