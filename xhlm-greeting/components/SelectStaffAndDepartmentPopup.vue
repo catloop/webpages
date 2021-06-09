@@ -465,4 +465,4 @@ module.exports = {
 };
 </script>
 
-<style src="../css/components/SelectStaffAndDepartmentPopup.css" scoped />
+<style src="./css/components/SelectStaffAndDepartmentPopup.css" scoped />

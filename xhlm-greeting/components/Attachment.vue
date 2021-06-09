@@ -54,4 +54,4 @@ module.exports = {
 };
 </script>
 
-<style src="../css/components/Attachment.css" scoped />
+<style src="./css/components/Attachment.css" scoped />

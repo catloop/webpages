@@ -114,4 +114,4 @@ module.exports = {
 };
 </script>
 
-<style src="../css/components/UploadFile.css" scoped />
+<style src="./css/components/UploadFile.css" scoped />

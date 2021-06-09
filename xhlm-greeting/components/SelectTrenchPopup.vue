@@ -258,4 +258,4 @@ module.exports = {
 };
 </script>
 
-<style src="../css/components/SelectTrenchPopup.css" scoped />
+<style src="./css/components/SelectTrenchPopup.css" scoped />

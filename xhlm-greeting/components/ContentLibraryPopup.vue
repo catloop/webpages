@@ -274,4 +274,4 @@ module.exports = {
 };
 </script>
 
-<style src="../css/components/ContentLibraryPopup.css" scoped />
+<style src="./css/components/ContentLibraryPopup.css" scoped />

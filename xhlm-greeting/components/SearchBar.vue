@@ -44,4 +44,4 @@ module.exports = {
 };
 </script>
 
-<style src="../css/components/SearchBar.css" scoped>
+<style src="./css/components/SearchBar.css" scoped>

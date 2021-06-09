@@ -293,4 +293,4 @@ module.exports = {
 };
 </script>
 
-<style src="../css/components/GreetingAttachments.css" scoped />
+<style src="./css/components/GreetingAttachments.css" scoped />
