@@ -1,0 +1,10 @@
+{
+    "success": true,
+    "statusCode": 200,
+    "alertMsg": "操作成功",
+    "data": {
+        "id": 233,
+        "cover": "https://i.pravatar.cc/300",
+        "type": "service"
+    }
+}

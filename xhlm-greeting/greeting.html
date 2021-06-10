@@ -129,9 +129,10 @@
 
         /**
          * @typedef TimeRange 时间范围
+         * @property {boolean} workDay 使用工作日
          * @property {(1 | 2 | 3 | 4 | 5 | 6 | 0)[]} days 星期
-         * @property {string} startTime
-         * @property {string} endTime
+         * @property {string} startTime 开始时刻
+         * @property {string} endTime 结束时刻
         */
 
         /**
@@ -234,7 +235,8 @@
                 Vuex.mapActions({
                     getStaffAndDepartment: 'GET_STAFF_AND_DEPARTMENT',
                     getTrenchs: 'GET_TRENCHS',
-                    getContentLibrary: 'GET_CONTENT_LIBRARY'
+                    getContentLibrary: 'GET_CONTENT_LIBRARY',
+                    getServiceInfo: 'GET_SERVICE_INFO'
                 }),
                 {
                 /**
@@ -243,7 +245,7 @@
                 */
                 initAsyncData: function() {
                     var toast = vant.Toast.loading('加载中');
-                    return Promise.all([this.getStaffAndDepartment(), this.getTrenchs(), this.getContentLibrary()])
+                    return Promise.all([this.getStaffAndDepartment(), this.getTrenchs(), this.getContentLibrary(), this.getServiceInfo()])
                         .then(function() {
                             toast.clear();
                         });

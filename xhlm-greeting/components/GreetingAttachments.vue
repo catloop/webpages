@@ -80,6 +80,25 @@
  */
 
 var MAX_ATTACHMENT_COUNT = 9;
+var actions = [{
+    name: '拍照',
+    type: 'CAMERA'
+}, {
+    name: '从相册选择',
+    type: 'ALBUM'
+}, {
+    name: '从内容库选择',
+    type: 'LIBRARY'
+}, {
+    name: '智能客服',
+    type: 'SERVICE'
+}, {
+    name: '手动添加网页',
+    type: 'WEB_PAGE'
+}, {
+    name: '手动添加小程序',
+    type: 'MINI_PROGRAM'
+}];
 
 module.exports = {
     components: {
@@ -94,39 +113,29 @@ module.exports = {
             required: true
         }
     },
-    computed: {
+    computed: Object.assign(Vuex.mapState(['serviceInfo']), {
         /**
          * 是否允许添加
          * @returns {boolean}
          */
         allowAdd: function() {
             return this.value.length < MAX_ATTACHMENT_COUNT;
+        },
+        actions: function() {
+            var _this = this;
+            return actions.map(function(action) {
+                return Object.assign(action, {
+                    disabled: action.type === 'SERVICE' && _this.value.some(function(attachment) {
+                        return attachment.type === 'service';
+                    })
+                });
+            });
         }
-    },
+    }),
     data: function() {
         return {
             showActionSheet: false,
             actionSheetExsist: false,
-            actions: [{
-                name: '拍照',
-                type: 'CAMERA'
-            }, {
-                name: '从相册选择',
-                type: 'ALBUM'
-            }, {
-                name: '从内容库选择',
-                type: 'LIBRARY'
-            }, {
-                name: '智能客服',
-                type: 'SERVICE',
-                disabled: true
-            }, {
-                name: '手动添加网页',
-                type: 'WEB_PAGE'
-            }, {
-                name: '手动添加小程序',
-                type: 'MINI_PROGRAM'
-            }],
             showAddWebPagePopup: false,
             showAddMiniProgramPopup: false,
             showContentLibraryPopup: false
@@ -185,7 +194,7 @@ module.exports = {
                     break;
                 // 智能客服
                 case 'SERVICE':
-                    console.log('智能客服');
+                    this.addAttachment(this.serviceInfo);
                     break;
                 // 添加网页
                 case 'WEB_PAGE':

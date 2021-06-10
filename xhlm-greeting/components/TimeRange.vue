@@ -27,10 +27,9 @@
             <div class="workday">
                 法定工作日
                 <van-switch
-                    :value="isWorkdaySelectedExactly"
-                    @click="onWorkdaySwitchClickHandler"
+                    v-model="tempValue.workDay"
                     class="switch"
-                />
+                ></van-switch>
             </div>
 
             <div class="days-container">
@@ -43,6 +42,7 @@
                         <button
                             @click="onDayClickHandler(day.value)"
                             :class="{ 'selected': tempValue.days.includes(day.value) }"
+                            :disabled="tempValue.workDay"
                             class="day-btn"
                         >{{ day.text }}</button>
                     </li>
@@ -100,7 +100,6 @@ var WEEK_DAYS = [{
     text: '周日',
     value: 0
 }];
-var WORKDAY_VALUES = [1, 2, 3, 4, 5];
 
 /**
  * 通过时刻字符串获取今天此时刻的时间戳
@@ -127,30 +126,21 @@ module.exports = {
             return WEEK_DAYS;
         },
         /**
-         * 是否选定并只有工作日选定
-         * @returns {boolean}
-         */
-        isWorkdaySelectedExactly: function() {
-            var days = this.tempValue.days;
-            return days.length === WORKDAY_VALUES.length && WORKDAY_VALUES.every(function(workDay) {
-                return days.includes(workDay);
-            });
-        },
-        /**
          * 是否已经选择时间
          * @returns {boolean}
          */
         isSelected: function() {
-            if (!this.tempValue) return false;
-            return !!this.tempValue.days && !!this.tempValue.days.length;
+            var value = this.value;
+            if (!value) return false;
+            return (!!value.days && !!value.days.length) || value.workDay;
         },
         /**
          * 选定时间显示的文字
          * @returns {string}
          */
         valueText: function() {
-            var value = this.tempValue;
-            var daysText = this.isWorkdaySelectedExactly
+            var value = this.value;
+            var daysText = value.workDay
                 ? '工作日'
                 : [].concat(value.days).sort().map(function(dayValue) {
                     return WEEK_DAYS.find(function(day) {
@@ -164,8 +154,7 @@ module.exports = {
         return {
             selectTimePopupExist: false,
             showSelectTimePopup: false,
-            tempValue: null,
-            daysBackup: []
+            tempValue: null
         };
     },
     methods: {
@@ -217,17 +206,6 @@ module.exports = {
             if (getTimeStampByMoment(this.tempValue.startTime) > getTimeStampByMoment(this.tempValue.endTime)) return vant.Toast.fail('开始时间必须早于结束时间');
             this.$emit('confirm', Object.assign({}, this.tempValue));
             this.showSelectTimePopup = false;
-        },
-        /**
-         * 点击法定工作日开关
-         * @return {void}
-         */
-        onWorkdaySwitchClickHandler: function() {
-            // 已经选择，恢复之前选择的值
-            if (this.isWorkdaySelectedExactly) return this.tempValue.days = [].concat(this.daysBackup);
-            // 没有选择，备份当前选择的值，然后赋值
-            this.daysBackup = [].concat(this.tempValue.days);
-            this.tempValue.days = [].concat(WORKDAY_VALUES);
         },
         /**
          * 点击星期

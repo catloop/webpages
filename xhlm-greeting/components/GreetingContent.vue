@@ -78,7 +78,7 @@ module.exports = {
             var textarea = this.$refs.textarea;
             var insertPosition = textarea.selectionEnd;
             var strArr = this.value.split('');
-            var insertText = SPLIT_WORD + text + SPLIT_WORD + '；';
+            var insertText = SPLIT_WORD + text + SPLIT_WORD;
             if (this.value.length + insertText.length > CONTENT_MAX_LENGTH) return;
             strArr.splice(insertPosition, 0, insertText);
             this.updateValue(strArr.join(''));
