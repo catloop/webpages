@@ -72,9 +72,7 @@
  * @property {DataItem[]} [children]
  */
 
-var getItemDescendantStaff = window['__UTILS'].getItemDescendantStaff;
-var getItemDescendantDepartment = window['__UTILS'].getItemDescendantDepartment;
-var getItemById = window['__UTILS'].getItemById;
+var getFilteredScopes = window['__UTILS'].getFilteredScopes;
 
 module.exports = {
     name: 'Scopes',
@@ -93,59 +91,7 @@ module.exports = {
          * 选择的范围列表，差分处理不同类型
          */
         filteredSelectedScopes: function() {
-            var _this = this;
-            switch (this.scopeType) {
-                case 'BY_TRENCH':
-                    return this.trenchs.filter(
-                        /**
-                         * @param {Trench} trench
-                         */
-                        function(trench) {
-                            return _this.scopeIds.includes(trench.id);
-                        }
-                    );
-                case 'BY_STAFF_AND_DEPARTMENT':
-                    return (function() {
-                        var fullSelectedDepartments = [].concat(
-                                [],
-                                _this.staffAndDepartment,
-                                _this.staffAndDepartment.map(function(item) {
-                                    return getItemDescendantDepartment(item);
-                                })
-                            )
-                            .flat()
-                            .filter(function(item) {
-                                var allStaffs = getItemDescendantStaff(item);
-                                if (!allStaffs.length) return false;
-                                return allStaffs.every(function(staff) {
-                                    return _this.scopeIds.includes(staff.id);
-                                });
-                            });
-                        var fullSelectedDepartmentIds = fullSelectedDepartments.map(function(item) {
-                            return item.id;
-                        });
-                        var deIncludedDepartments = fullSelectedDepartments.filter(function(item) {
-                            return !fullSelectedDepartments.some(function(itm) {
-                                return getItemDescendantDepartment(itm).some(function(it) {
-                                    return it.id === item.id;
-                                });
-                            });
-                        });
-                        var deIncludedStaffs = _this.scopeIds.filter(function(staffId) {
-                                return !deIncludedDepartments.map(function(item) {
-                                    return getItemDescendantStaff(item).map(function(staff) {
-                                        return staff.id;
-                                    });
-                                }).flat().includes(staffId);
-                            })
-                            .map(function(staffId) {
-                                return getItemById(_this.staffAndDepartment, staffId);
-                            });
-                        return [].concat(deIncludedDepartments, deIncludedStaffs);
-                    })();
-                default:
-                    return [];
-            }
+            return getFilteredScopes(this.scopeType, this.scopeIds, this.staffAndDepartment, this.trenchs);
         }
     }),
     methods: Object.assign(Vuex.mapMutations({

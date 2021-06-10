@@ -436,7 +436,6 @@
                 onSaveBtnClickHandler: function() {
                     var toast = vant.Toast.loading('正在保存');
                     var data = this.greeting;
-                    console.log(JSON.stringify(this.greeting, null, 4));
                     axios.get(window['__MOCK_API'].successNoData, {
                         data: data
                     }).then(function(response) {

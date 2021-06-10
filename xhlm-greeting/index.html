@@ -55,15 +55,15 @@
 					<div class="greeting-item-scope">
 						适用于
 						<p class="names">
-							{{ greeting.scopes | sliceScopeText }}
-							<span class="count">{{ greeting.scopeCount }}{{ greeting.scopeType | scopeUnitText }}</span>
+							{{ getFilteredScopesTextByGreeting(greeting) }}
+							<span class="count">{{ greeting.scopeIds.length }}{{ greeting.scopeType | scopeUnitText }}</span>
 							{{ greeting.scopeType | scopeTypeText }}
 						</p>
 					</div>
 	
 					<div class="greeting-item-footer">
 						<div
-							v-if="greeting.isDayparting"
+							v-if="greeting.daypartingRules.length"
 							class="mark mark-dayparting"
 						>分时段欢迎语</div>
 	
@@ -84,31 +84,82 @@
 	</script>
 
 	<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.9/vue.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vuex/3.6.2/vuex.min.js"></script>
 	<script src="./js/http-vue-loader.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/vant/2.12.15/vant.min.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/qs/6.10.1/qs.min.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
-	<script src="./js/mock/api.mock.js"></script>
+    <script src="./js/mock/api.mock.js"></script>
+    <script src="./js/store.js"></script>
+    <script src="./js/utils.js"></script>
 	<script>
 	(function() {
 		/**
-		 * @typedef {'staff' | 'department' | 'trench'} ScopeType
+		 * @typedef {'image' | 'anchor' | 'mini-program'} ItemScopeType
 		 * 
 		 * @typedef Scope
 		 * @property {number} id
 		 * @property {string} name
-		 * @property {ScopeType} type
+		 * @property {ItemScopeType} type
 		 * 
 		 * @typedef Attachment
-		 * @property {'image' | 'anchor' | 'mini-program'} type
+		 * @property {ItemScopeType} type
 		 * @property {string} cover
 		 * @property {string} title
 		*/
 
-		var GREETING_PAGE_PATH = './greeting.html';
+		/**
+		 * @typedef DataItem
+		 * @property {number} id
+		 * @property {DataType} type
+		 * @property {string} name
+		 * @property {DataItem[]} [children]
+		*/
+
+		/**
+		 * @typedef Trench 渠道
+		 * @property {number} id 渠道 ID
+		 * @property {string} name 渠道名称
+		 * @property {'trench'} type 渠道类型
+		 * @property {string} avatar 渠道图片
+		*/
+
+		/**
+		 * @typedef {'BY_STAFF_AND_DEPARTMENT' | 'BY_TRENCH'} ScopeType 范围类型
+		 * - BY_STAFF_AND_DEPARTMENT: 按部门及员工
+		 * - BY_TRENCH: 按渠道
+		*/
+
+		/**
+		 * @typedef DaypartingRule 分时段规则
+		 * @property {string} content
+		 * @property {Object} timeRange
+		 * @property {number[]} timeRange.days
+		 * @property {string} timeRange.startTime
+		 * @property {string} timeRange.endTime
+		 * @property {Attachment} attachments
+		*/
+
+		/**
+		 * @typedef Greeting 配欢迎语置
+		 * @property {number} id
+		 * @property {number} createTime
+		 * @property {string} creator
+		 * @property {ScopeType} scopeType
+		 * @property {number[]} scopeIds
+		 * @property {string} content
+		 * @property {Attachment[]} attachments
+		 * @property {DaypartingRule[]} daypartingRules
+		*/
+
+		var GREETING_PAGE_PATH = './greeting.html'; // 新增和编辑要跳转的地址
+		var SCOPES_TEXT_LENGTH_LIMIT = 14; // 适用范围最长显示字符数量
+
+		var getFilteredScopes = window['__UTILS'].getFilteredScopes;
 
 		new Vue({
+            store: window['__VUEX_STORE'],
 			template: '#page-template',
 			el: '#app',
 			components: {
@@ -126,46 +177,49 @@
 					return moment(time).format(fmtStr);
 				},
 				/**
-				 * 界面上显示的适用范围文字
-				 * @param {Scope[]} scopes 适用对象
-				 * @param {number} [limit=3] 最大显示长度
-				 * @returns {string}
-				*/
-				sliceScopeText: function(scopes, limit) {
-					limit = 3 | limit;
-					return scopes.slice(0, limit).map(function(scope) {
-						return scope.name;
-					}).join('；') + (scopes.length > limit ? '...等' : '');
-				},
-				/**
 				 * 适用范围的单位文字
-				 * @param {ScopeType} scopeType 范围类型
+				 * @param {ItemScopeType} scopeType 范围类型
 				 * @returns {'名' | '个'}
 				*/
 				scopeUnitText: function(scopeType) {
 					return ({
-						'staff_and_department': '名',
-						'trench': '个'
+						'BY_STAFF_AND_DEPARTMENT': '名',
+						'BY_TRENCH': '个'
 					})[scopeType] || '';
 				},
 				/**
 				 * 适用范围名词文字
-				 * @param {ScopeType} scopeType 范围类型
+				 * @param {ItemScopeType} scopeType 范围类型
 				 * @returns {'员工' | '渠道'}
 				*/
 				scopeTypeText: function(scopeType) {
 					return ({
-						'staff_and_department': '员工',
-						'trench': '渠道'
+						'BY_STAFF_AND_DEPARTMENT': '员工',
+						'BY_TRENCH': '渠道'
 					})[scopeType] || '';
 				}
 			},
+			computed: Vuex.mapState(['trenchs', 'staffAndDepartment']),
 			data: function() {
 				return {
 					greetingList: []
 				};
 			},
-			methods: {
+			methods: Object.assign(Vuex.mapActions({
+                    getStaffAndDepartment: 'GET_STAFF_AND_DEPARTMENT',
+                    getTrenchs: 'GET_TRENCHS'
+                }), {
+				/**
+				 * 通过欢迎语对象获取过滤后的适用范围列表
+				 * @param {Greeting} greeting 欢迎语配置对象
+     			 * @returns {string}
+				*/
+				getFilteredScopesTextByGreeting: function(greeting) {
+					var filteredScopesText = getFilteredScopes(greeting.scopeType, greeting.scopeIds, this.staffAndDepartment, this.trenchs).map(function(scope) {
+						return scope.name;
+					}).join('；');
+					return filteredScopesText.slice(0, SCOPES_TEXT_LENGTH_LIMIT) + (filteredScopesText.length > SCOPES_TEXT_LENGTH_LIMIT ? '...等' : '');
+				},
 				/**
 				 * 获取欢迎语列表
 				 * @returns {Promise<void>}
@@ -221,9 +275,9 @@
 						id: greetingId
 					});
 				}	
-			},
+			}),
 			mounted: function() {
-				this.getGreetingList();
+				Promise.all([this.getStaffAndDepartment(), this.getTrenchs()]).then(this.getGreetingList);
 			}
 		});
 	})();
