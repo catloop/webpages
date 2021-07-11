@@ -56,7 +56,7 @@
 						适用于
 						<p class="names">
 							{{ getFilteredScopesTextByGreeting(greeting) }}
-							<span class="count">{{ greeting.scopeIds.length }}{{ greeting.scopeType | scopeUnitText }}</span>
+							<span class="count">{{ greeting.scopeNumber }}{{ greeting.scopeType | scopeUnitText }}</span>
 							{{ greeting.scopeType | scopeTypeText }}
 						</p>
 					</div>
@@ -85,14 +85,21 @@
 
 	<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.9/vue.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/vuex/3.6.2/vuex.min.js"></script>
+	<script src="./js/url.js"></script>
 	<script src="./js/http-vue-loader.js"></script>
+	<script>
+	(function() {
+		window.__HTTP_VUE_LOADER_BASE_URL = 'http://localhost:5050/';
+	})();
+	</script>
+	<script src="./js/http-vue-loader.config.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/vant/2.12.15/vant.min.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/qs/6.10.1/qs.min.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script src="./js/mock/api.mock.js"></script>
-    <script src="./js/store.js"></script>
     <script src="./js/utils.js"></script>
+    <script src="./js/store.js"></script>
 	<script>
 	(function() {
 		/**
@@ -147,14 +154,15 @@
 		 * @property {number} createTime
 		 * @property {string} creator
 		 * @property {ScopeType} scopeType
-		 * @property {number[]} scopeIds
+		 * @property {number} scopeNumber
+		 * @property {DataItem[]} scopeItems
 		 * @property {string} content
 		 * @property {Attachment[]} attachments
 		 * @property {DaypartingRule[]} daypartingRules
 		*/
 
 		var GREETING_PAGE_PATH = './greeting.html'; // 新增和编辑要跳转的地址
-		var SCOPES_TEXT_LENGTH_LIMIT = 14; // 适用范围最长显示字符数量
+		var SCOPES_TEXT_LENGTH_LIMIT = 12; // 适用范围最长显示字符数量
 
 		var getFilteredScopes = window['__UTILS'].getFilteredScopes;
 
@@ -163,7 +171,7 @@
 			template: '#page-template',
 			el: '#app',
 			components: {
-				Attachment: httpVueLoader('./components/Attachment.vue')
+				Attachment: httpVueLoader('/components/Attachment.vue')
 			},
 			filters: {
 				/**
@@ -199,23 +207,19 @@
 					})[scopeType] || '';
 				}
 			},
-			computed: Vuex.mapState(['trenchs', 'staffAndDepartment']),
 			data: function() {
 				return {
 					greetingList: []
 				};
 			},
-			methods: Object.assign(Vuex.mapActions({
-                    getStaffAndDepartment: 'GET_STAFF_AND_DEPARTMENT',
-                    getTrenchs: 'GET_TRENCHS'
-                }), {
+			methods: Object.assign({
 				/**
 				 * 通过欢迎语对象获取过滤后的适用范围列表
 				 * @param {Greeting} greeting 欢迎语配置对象
      			 * @returns {string}
 				*/
 				getFilteredScopesTextByGreeting: function(greeting) {
-					var filteredScopesText = getFilteredScopes(greeting.scopeType, greeting.scopeIds, this.staffAndDepartment, this.trenchs).map(function(scope) {
+					var filteredScopesText = greeting.scopeItems.map(function(scope) {
 						return scope.name;
 					}).join('；');
 					return filteredScopesText.slice(0, SCOPES_TEXT_LENGTH_LIMIT) + (filteredScopesText.length > SCOPES_TEXT_LENGTH_LIMIT ? '...等' : '');
@@ -277,7 +281,7 @@
 				}	
 			}),
 			mounted: function() {
-				Promise.all([this.getStaffAndDepartment(), this.getTrenchs()]).then(this.getGreetingList);
+				this.getGreetingList();
 			}
 		});
 	})();

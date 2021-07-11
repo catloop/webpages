@@ -106,4 +106,4 @@ module.exports = {
 };
 </script>
 
-<style src="./css/components/GreetingContent.css" scoped />
+<style src="../css/components/GreetingContent.css" scoped />

@@ -34,8 +34,7 @@
                     class="data-item"
                 >
                     <van-checkbox
-                        :disabled="isDepartmentEmpty(item)"
-                        :value="isDataItemSelected(item)"
+                        :value="isItemSelected(item)"
                         @click.native.stop="onDataItemCheckboxClickHandle(item)"
                         class="checkbox"
                     ></van-checkbox>
@@ -51,10 +50,10 @@
                     ></i>
                     <span class="name">{{ item.name }}</span>
                     <span
-                        v-if="item.type === 'department' && getDepartmentSelectedCount(item)"
+                        v-if="item.type === 'department' && isItemSelected(item)"
                         class="select-status"
                     >
-                        <template v-if="isDepartmentFillSelected(item)">
+                        <template v-if="isDepartmentFullSelected(item)">
                             已全选
                         </template>
                         <template v-else>
@@ -88,7 +87,7 @@
                 class="confirm-btn btn btn-large btn-primary btn-rounded"
             >
                 确定
-                <span class="select-counter">（已选{{ selectedIds.length }}个员工）</span>
+                <span class="select-counter">（已选 {{ getAllSelectedCount }} 个员工）</span>
             </button>
         </div>
     </van-popup>
@@ -96,23 +95,36 @@
 
 <script>
 var HASH_PREFIX = 'selectStaffAndDepartment:/';
+var SELECT_COUNT_PLACEHOLDER = '...';
 
 /**
  * @typedef {'staff' | 'department'} DataType
  */
 
 /**
+ * @typedef {number | string} ItemId
+ */
+
+/**
  * @typedef DataItem
- * @property {number} id
+ * @property {ItemId} id
  * @property {DataType} type
  * @property {string} name
  * @property {DataItem[]} [children]
  */
 
+/**
+ * @typedef TinyTree
+ * @property {number | string} i id
+ * @property {1 | 2} t type
+ * - 1: staff
+ * - 2: department
+ * @property {TinyTree[]} [c] children
+ */
+
 var getParentById = window['__UTILS'].getParentById;
 var getItemById = window['__UTILS'].getItemById;
-var getItemDescendant = window['__UTILS'].getItemDescendant;
-var getItemDescendantStaff = window['__UTILS'].getItemDescendantStaff;
+var getItemDescendants = window['__UTILS'].getItemDescendants;
 var smoothScrollToHorizontalEnd = window['__UTILS'].smoothScrollToHorizontalEnd;
 
 /**
@@ -129,15 +141,89 @@ function getHistoryStack(hash) {
 }
 
 /**
+ * 返回删除 children 的新对象
+ * @param {DataItem} item
+ * @returns {DataItem}
+ */
+function removeChildren(item) {
+    var _item = Object.assign({},item);
+    delete _item.children;
+    return _item;
+}
+
+/**
  * 默认组件内状态
  */
 function getDefaultData() {
     return {
         currentDepartmentId: null,
-        selectedIds: [],
+        selectedItems: [],
         inSearch: false,
-        searchText: ''
+        searchText: '',
+        loggedIds: []
     }
+}
+
+/**
+ * 最小化部门 / 员工对象
+ * @param {DataItem} item
+ */
+function simplify(item) {
+    if (!item) return item;
+    return {
+        i: item.id,
+        t: ({
+            staff: 1,
+            department: 2
+        })[item.type]
+    };
+}
+
+/**
+ * 逐级向上查找关联，获取一颗单叉路径树
+ * @param {DataItem[]} data 完整树
+ * @param {ItemId} itemId
+ * @returns {DataItem} 单叉树
+ */
+function getSingleTree(data, itemId) {
+    var parent = simplify(getItemById(data, itemId)), child;
+    while (child = parent, parent = simplify(getParentById(data, parent.i))) {
+        parent.c = [child];
+    }
+    return child;
+}
+
+/**
+ * 合并两颗树
+ * @param {TinyTree | TinyTree[]} alpha
+ * @param {TinyTree | TinyTree[]} beta
+ * @return {TinyTree | TinyTree[]}
+ */
+function merge(alpha, beta) {
+    var isItem = !!alpha.i;
+    var gamma = isItem ? Object.assign({}, alpha) : [].concat(alpha);
+    if (isItem) {
+        if (!beta.c || !beta.c.length) return gamma;
+        gamma.c = merge(gamma.c || [], beta.c);
+    } else {
+        if (!beta || !beta.length) return gamma;
+        var addItems = beta.filter(function(bItem) {
+            return !gamma.some(function(gItem) {
+                return bItem.i === gItem.i;
+            });
+        });
+        var sameItems = beta.filter(function(bItem) {
+            return gamma.some(function(gItem) {
+                return bItem.i === gItem.i;
+            });
+        });
+        sameItems.forEach(function(sItem) {
+            var dIndex = gamma.findIndex(function(gItem) { return sItem.i === gItem.i; });
+            gamma[dIndex] = merge(gamma[dIndex], sItem);
+        });
+        gamma = gamma.concat(addItems);
+    }
+    return gamma;
 }
 
 module.exports = {
@@ -152,8 +238,11 @@ module.exports = {
         }
     },
     computed: Object.assign(Vuex.mapState(['staffAndDepartment']), Vuex.mapState({
-        scopeIds: function(state) {
-            return state.greeting.scopeIds;
+        scopeItems: function(state) {
+            return state.greeting.scopeItems;
+        },
+        selectedCountMap: function(state) {
+            return state.selectedCountMap;
         }
     }),
     {
@@ -164,10 +253,10 @@ module.exports = {
         directories: function() {
             if (!this.currentDepartmentId) return [];
             var data = this.staffAndDepartment;
-            var parentId = this.currentDepartmentId;  
-            var directories = [getItemById(data, parentId)];
-            while (parentId = (getParentById(data, parentId) || {}).id) {
-                directories.unshift(getItemById(data, parentId));
+            var parent = getItemById(data, this.currentDepartmentId);
+            var directories = [parent];
+            while (parent = getParentById(data, parent.id)) {
+                directories.unshift(parent);
             }
             return directories;
         },
@@ -190,15 +279,27 @@ module.exports = {
             if (this.inSearch && this.searchText) return (
                 // 当前没有在某个部门下，搜索全部数据，反之搜索特定部门的子项
                 this.currentDepartmentId
-                    ? getItemDescendant(getItemById(this.staffAndDepartment, this.currentDepartmentId))
+                    ? getItemDescendants(getItemById(this.staffAndDepartment, this.currentDepartmentId))
                     : this.staffAndDepartment.map(function(item) {
-                        return getItemDescendant(item);
+                        return getItemDescendants(item);
                     }).flat()
             ).filter(function(item) {
                 return item.name.includes(_this.searchText);
             });
             // 否则仅显示当前部门的项目
             return this.currentItems;
+        },
+        /**
+         * 获取全部选择人数
+         * @returns {number | string} 全部选择人数
+         */
+        getAllSelectedCount: function() {
+            if (!this.selectedItems.length) return 0;
+            var _this = this;
+            var selectedItems = this.selectedItems.map(function(item) {
+                return getItemById(_this.staffAndDepartment, item.id);
+            });
+            return this.getDepartmentSelectedCountImmediate(selectedItems);
         }
     }),
     watch: {
@@ -210,7 +311,12 @@ module.exports = {
         return getDefaultData();
     },
     methods: Object.assign(Vuex.mapMutations({
-        setGreetingScopeIds: 'SET_GREETING_SCOPE_IDS'
+        setGreetingScopeItems: 'SET_GREETING_SCOPE_ITEMS',
+        setGreetingScopeNumber: 'SET_GREETING_SCOPE_NUMBER',
+        setGreetingTinyTree: 'SET_GREETING_TINY_TREE'
+    }), Vuex.mapActions({
+        getDepartmentChildrenById: 'GET_DEPARTMENT_CHILDREN_BY_ID',
+        getSelectedCount: 'GET_SELECTED_COUNT_MAP'
     }), {
         /**
          * hashchange 事件监听监听程序，对目录提供前进后退支持
@@ -231,11 +337,11 @@ module.exports = {
             // 没有历史记录，去根目录
             if (!historyStack.length) return this.enterDepartment(null);
             // 有历史记录，去末位 id
-            this.enterDepartment(~~([].concat(historyStack).pop()));
+            this.enterDepartment(this.loggedIds[~~([].concat(historyStack).pop())]);
         },
         /**
          * 进入部门（只处理 hash 前进后退，具体操作交给事件监听）
-         * @param {number} itemId 部门 id
+         * @param {ItemId} itemId 部门 id
          * @returns {void}
          */
         hashEnterDepartment: function(itemId) {
@@ -246,11 +352,14 @@ module.exports = {
             var historyStack = getHistoryStack();
             // 没有 id，回到部门选择
             if (!itemId) return history.go(-(historyStack.length));
-            var itemIdStr = itemId + '';
+            // id 没有被记录则记录
+            !this.loggedIds.includes(itemId) && this.loggedIds.push(itemId);
+            // 取 id 在记录列表中的序号，用这个序号做路径标识符
+            var itemIdLoggedIndexStr = this.loggedIds.indexOf(itemId) + '';
             // 历史栈中包含部门 id，后退相应步
-            if (historyStack.includes(itemIdStr)) return history.go(historyStack.indexOf(itemIdStr) - (historyStack.length - 1));
+            if (historyStack.includes(itemIdLoggedIndexStr)) return history.go(historyStack.indexOf(itemIdLoggedIndexStr) - (historyStack.length - 1));
             // 历史栈中不包含部门 id，推栈前进
-            historyStack.push(itemIdStr);
+            historyStack.push(itemIdLoggedIndexStr);
             window.location.hash = HASH_PREFIX + historyStack.join('/');
         },
         /**
@@ -298,9 +407,11 @@ module.exports = {
          */
         onDataItemClickHandle: function(item) {
             switch (item.type) {
+                // 类型为员工，切换选择
                 case 'staff':
-                    this.toggleSelectStaff(item.id);
+                    this.toggleSelectStaff(item);
                     break;
+                // 类型为部门、进入部门
                 case 'department':
                     this.hashEnterDepartment(item.id);
                     break;
@@ -315,9 +426,11 @@ module.exports = {
          */
         onDataItemCheckboxClickHandle: function(item) {
             switch (item.type) {
+                // 类型为员工、切换员工选择
                 case 'staff':
-                    this.toggleSelectStaff(item.id);
+                    this.toggleSelectStaff(item);
                     break;
+                // 类型为部门、切换部门选择
                 case 'department':
                     this.toggleSelectDepartment(item);
                     break;
@@ -327,46 +440,150 @@ module.exports = {
         },
         /**
          * 进入目录（部门）
-         * @param {number} [itemId] 目录（部门）id
+         * @param {ItemId} [itemId] 目录（部门）id
          * @returns {void}
          */
         enterDepartment: function(itemId) {
             var _this = this;
-            this.currentDepartmentId = itemId || null;
-            setTimeout(function() {
-                smoothScrollToHorizontalEnd(_this.$refs.crumbsScrollContainer);
+            function enter(_itemId) {
+                _this.currentDepartmentId = _itemId;
+                setTimeout(function() {
+                    smoothScrollToHorizontalEnd(_this.$refs.crumbsScrollContainer);
+                });
+            }
+            // 没有 id 代表进入根目录
+            if (!itemId) return enter(null);
+            var department = getItemById(this.staffAndDepartment, itemId);
+            // 部门不应该不存在
+            if (!department) throw new Error('DEPARTMENT_NOT_FOUND');
+            // 能找到部门并且部门下已有项目，直接进入
+
+            if (department.children && department.children.length) return enter(department.id);
+            // 部门下没有项目，加载
+            var toast = vant.Toast.loading({ message: '加载中', duration: 0, forbidClick: true });
+            this.getDepartmentChildrenById(department.id).then(function() {
+                toast.clear();
+                enter(department.id);
+            });
+        },
+        /**
+         * 项目自身是否存在于选择数据中
+         * @param {ItemId} itemId
+         * @return {boolean}
+         */
+        isItemExistInData: function(itemId) {
+            return this.selectedItems.some(function(item) {
+                return item.id === itemId;
+            });
+        },
+        /**
+         * 祖先项目是否存在于选择数据中
+         * @param {ItemId} itemId
+         * @returns {boolean}
+         */
+        isItemAncestorsExistInData: function(itemId) {
+            var isItemAncestorsExistInData = false;
+            var parent = getItemById(this.staffAndDepartment, itemId);
+            while (parent = getParentById(this.staffAndDepartment, parent.id)) {
+                if (this.isItemExistInData(parent.id)) {
+                    isItemAncestorsExistInData = true;
+                    break;
+                }
+            }
+            return isItemAncestorsExistInData;
+        },
+        /**
+         * 子孙项目是否存在于选择数据中
+         * @param {ItemId} itemId
+         * @returns {boolean}
+         */
+        isDescendantExistInData: function(itemId) {
+            var descendants = getItemDescendants(getItemById(this.staffAndDepartment, itemId));
+            return this.selectedItems.some(function(sItem) {
+                return descendants.some(function(dItem) {
+                    return sItem.id === dItem.id;
+                });
+            });
+        },
+        /**
+         * 项目是否显示为已选择
+         * @param {DataItem} item 项目
+         * @returns {boolean}
+         */
+        isItemSelected: function(item) {
+            var id = item.id;
+            var preCond = this.isItemExistInData(id) || this.isItemAncestorsExistInData(id);
+            return item.type === 'department'
+                       ? (preCond || this.isDescendantExistInData(id))
+                       : preCond;
+        },
+        /**
+         * 向选择数据中添加一项
+         * @param {DataItem} item
+         * @returns {void}
+         */
+        addItemToData: function(item) {
+            !this.isItemExistInData(item.id) && this.selectedItems.push(removeChildren(item));
+        },
+        /**
+         * 向选择数据中添加复数项
+         * @param {DataItem[]} items
+         * @returns {void}
+         */
+        addItemsToData: function(items) {
+            var _this = this;
+            var validItems = items.filter(function(item) {
+                return !_this.isItemExistInData(item.id);
+            }).map(removeChildren);
+            this.selectedItems = this.selectedItems.concat(validItems);
+        },
+        /**
+         * 从选择的数据中移除一项
+         * @param {ItemId} itemId
+         * @returns {void}
+         */
+        removeItemFromData: function(itemId) {
+            this.selectedItems = this.selectedItems.filter(function(item) {
+                return item.id !== itemId;
+            });
+        },
+        /**
+         * 从选择数据中移除多项
+         * @param {ItemId[]} itemIds
+         * @returns {void}
+         */
+        removeItemsFromData: function(itemIds) {
+            this.selectedItems = this.selectedItems.filter(function(item) {
+                return !itemIds.includes(item.id);
             });
         },
         /**
          * 切换员工勾选状态
-         * @param {number} itemId 项目 id
+         * @param {DataItem} item 项目 id
          * @returns {void}
          */
-        toggleSelectStaff: function(itemId) {
-            if (this.selectedIds.includes(itemId)) return this.selectedIds = this.selectedIds.filter(function(id) {
-                return id !== itemId;
-            });
-            this.selectedIds.push(itemId);
+        toggleSelectStaff: function(item) {
+            this.isItemSelected(item)
+                ? this.unSelectStaff(item)
+                : this.selectStaff(item);
         },
         /**
-         * 项目是否已选择
-         * @param {DataItem} item 项目
-         * @returns {boolean}
+         * 选择员工
+         * @param {DataItem} item
+         * @returns {void}
          */
-        isDataItemSelected: function(item) {
-            var _this = this;
-            switch (item.type) {
-                case 'staff':
-                    return this.selectedIds.includes(item.id);
-                case 'department':
-                    return getItemDescendantStaff(item).some(function(itm) {
-                        return _this.selectedIds.some(function(id) {
-                            return itm.id === id;
-                        });
-                    });
-                default:
-                    return false;
-            }
+        selectStaff: function(item) {
+            this.addItemToData(item);
+            this.processWTFSelect(item);
+        },
+        /**
+         * 取消选择员工
+         * @param {DataItem} item
+         * @returns {void}
+         */
+        unSelectStaff: function(item) {
+            this.removeItemFromData(item.id);
+            this.processWTFUnselect(item);
         },
         /**
          * 切换目录（部门）勾选状态，递归选择 / 取消包含的员工
@@ -374,47 +591,151 @@ module.exports = {
          * @returns {void}
          */
         toggleSelectDepartment: function(item) {
-            var allStaffIds = getItemDescendantStaff(item).map(function(staff) {
-                return staff.id;
-            });
-            // 部门已选择（其中有员工选中），取消选择所选的员工
-            if (this.isDataItemSelected(item)) {
-                this.selectedIds = this.selectedIds.filter(function(id) {
-                    return !allStaffIds.includes(id);
-                });
-                return;
-            }
-            // 部门没有选择（其中没有选中的员工），选择所有员工
-            this.selectedIds = [].concat(this.selectedIds, allStaffIds);
+            this.isItemSelected(item)
+                ? this.unSelectDepartment(item)
+                : this.selectDepartment(item);
         },
         /**
-         * 部门是否为空
-         * @param {DataItem} 部门或员工
+         * 选择部门
+         * @param {DataItem} item
+         * @returns {void}
+         */
+        selectDepartment: function(item) {
+            this.addItemToData(item);
+            this.removeItemDescendants(item);
+            this.processWTFSelect(item);
+        },
+        /**
+         * 取消选择部门
+         * @param {DataItem} item
+         * @returns {void}
+         */
+        unSelectDepartment: function(item) {
+            this.removeItemFromData(item.id);
+            this.removeItemDescendants(item);
+            this.processWTFUnselect(item);
+        },
+        /**
+         * 如果此时本级已全选，删除本级所有兄弟项，添加本部门，并使用此规则逐级向上查找处理
+         * @param {DataItem} item
+         * @return {void}
+         */
+        processWTFSelect: function(item) {
+            var _this = this;
+            /** @param {DataItem} department */
+            function process(department) {
+                // 此时部门子项没有全在选择数据中选则跳过不作处理
+                if (!_this.isDepartmentChildrenAllInData(department.id)) return false;
+                // 删除部门所有子项
+                _this.removeItemsFromData(department.children.map(function(itm) {
+                    return itm.id;
+                }));
+                // 添加本部门
+                _this.addItemToData(department);
+                return true;
+            }
+            var parent = item;
+            while (parent = getParentById(this.staffAndDepartment, parent.id)) {
+                if (!process(parent)) break;
+            }
+        },
+        /**
+         * 向上递归删除所有上级部门，并添加此级部门的兄弟项中所有仅因父（祖先）级选择而显示选择的项目
+         * @param {DataItem} item
+         * @returns {void}
+         */
+        processWTFUnselect: function(item) {
+            var _this = this;
+            var addItems = [];
+            var removeItems = [];
+            function process(department) {
+                removeItems.push(department);
+                if (!department.children || !department.children.length) return;
+                addItems = addItems.concat(department.children.filter(function(child) {
+                    var id = child.id;
+                    // 自身未选择、子孙未选择、祖先已选择
+                    var preCond = !_this.isItemExistInData(id) && _this.isItemAncestorsExistInData(id);
+                    return child.type === 'department'
+                            ? (preCond && !_this.isDescendantExistInData(id))
+                            : preCond;
+                }));
+            }
+            var parent = item;
+            while (parent = getParentById(this.staffAndDepartment, parent.id)) process(parent);
+            this.addItemsToData(addItems.filter(function(itm) { return itm.id !== item.id; }));
+            this.removeItemsFromData(removeItems.map(function(itm) { return itm.id; }));
+        },
+        /**
+         * 移除部门的所有子孙项
+         * @param {DataItem} item
+         * @returns {void}
+         */
+        removeItemDescendants: function(item) {
+            var _this = this;
+            this.removeItemsFromData(getItemDescendants(item).filter(function(descendant) {
+                return _this.selectedItems.some(function(sItem) {
+                    return sItem.id === descendant.id;
+                });
+            }).map(function(itm) { return itm.id; }));
+        },
+        /**
+         * 部门子项是否全在数据中
+         * @param {ItemId} itemId
          * @returns {boolean}
          */
-        isDepartmentEmpty: function(item) {
-            return item.type === 'department' && !getItemDescendantStaff(item).length;
+        isDepartmentChildrenAllInData: function(itemId) {
+            var _this = this;
+            var department = getItemById(this.staffAndDepartment, itemId);
+            var children = department.children;
+            if (!children || !children.length) return false;
+            return children.every(function(item) {
+                return _this.isItemExistInData(item.id);
+            });
         },
         /**
          * 获取部门下勾选的子孙项（员工）数量
          * @param {DataItem} item 目录（部门）
-         * @returns {number} 已选员工数量
+         * @returns {number | string} 已选员工数量
          */
         getDepartmentSelectedCount: function(item) {
-            var allStaffIds = getItemDescendantStaff(item).map(function(staff) {
-                return staff.id;
+            var descendants = getItemDescendants(item);
+            // 还没有子孙，返回 0
+            if (!descendants.length) return 0;
+            var selectedDescendants = this.selectedItems.filter(function(sItem) {
+                return descendants.some(function(dItem) {
+                    return dItem.id === sItem.id;
+                });
             });
-            return this.selectedIds.filter(function(id) {
-                return allStaffIds.includes(id);
-            }).length;
+            return this.getDepartmentSelectedCountImmediate(selectedDescendants);
+        },
+        /**
+         * 立即返回选择人数的缓存值或代替内容
+         * @param {DataItem[]} items 员工部门集合
+         * @returns {number | string} 已选员工数量
+         */
+        getDepartmentSelectedCountImmediate: function(items) {
+            // 无内容，返回 0
+            if (!items.length) return 0;
+            var selectedIdStr = items.map(function(sItem) { return sItem.id; }).sort().join(',');
+            var cachedContent = this.selectedCountMap[selectedIdStr];
+            if (cachedContent) {
+                // 还在请求中，返回替代文字
+                if (cachedContent instanceof Promise) return SELECT_COUNT_PLACEHOLDER;
+                // 命中缓存，返回缓存值
+                return cachedContent;
+            }
+            this.getSelectedCount(items);
+            // 异步获取完成写入缓存之前输出临时代替文字
+            return SELECT_COUNT_PLACEHOLDER;
         },
         /**
          * 部门是否全选
          * @param {DataItem} item 部门对象
          * @returns {boolean}
          */
-        isDepartmentFillSelected: function(item) {
-            return this.getDepartmentSelectedCount(item) === getItemDescendantStaff(item).length;
+        isDepartmentFullSelected: function(item) {
+            // 自身选择或祖先选择就是全选
+            return this.isItemExistInData(item.id) || this.isItemAncestorsExistInData(item.id);
         },
         /**
          * 初始化组件状态
@@ -426,7 +747,23 @@ module.exports = {
             Object.keys(defaultData).forEach(function(key) {
                 _this[key] = defaultData[key];
             });
-            this.selectedIds = [].concat(this.scopeIds);
+            this.selectedItems = [].concat(this.scopeItems);
+        },
+        /**
+         * 构建最小树结构，保存以供编辑时加载“完整”树结构
+         * * 完整指能覆盖选择数据的结构
+         * @returns {void}
+         */
+        resolveTinyTree: function() {
+            var _this = this;
+            var tinyTree = [];
+            var singleTrees = this.selectedItems.map(function(item) {
+                return getSingleTree(_this.staffAndDepartment, item.id);
+            });
+            singleTrees.forEach(function(tree) {
+                tinyTree = merge(tinyTree, [tree]);
+            });
+            this.setGreetingTinyTree(tinyTree);
         },
         /**
          * 打开弹层
@@ -450,9 +787,20 @@ module.exports = {
          * @returns {void}
          */
         onConfirmHandler: function() {
-            this.setGreetingScopeIds(this.selectedIds);
-            this.close();
-            this.$emit('confirm', this.selectedIds);
+            var _this = this;
+            this.setGreetingScopeItems(this.selectedItems);
+            var selectedItems = this.selectedItems.map(function(item) {
+                return getItemById(_this.staffAndDepartment, item.id);
+            });
+            var toast = vant.Toast.loading({ message: '加载中', duration: 0, forbidClick: true });
+            this.getSelectedCount(selectedItems).then(function() {
+                var staffNumber = _this.getDepartmentSelectedCountImmediate(selectedItems);
+                _this.setGreetingScopeNumber(staffNumber === SELECT_COUNT_PLACEHOLDER ? 0 : staffNumber);
+                _this.resolveTinyTree();
+                _this.$emit('confirm', _this.selectedItems);
+                _this.close();
+                toast.clear();
+            });
         }
     }),
     mounted: function() {
@@ -465,4 +813,4 @@ module.exports = {
 };
 </script>
 
-<style src="./css/components/SelectStaffAndDepartmentPopup.css" scoped />
+<style src="../css/components/SelectStaffAndDepartmentPopup.css" scoped />

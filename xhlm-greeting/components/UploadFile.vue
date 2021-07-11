@@ -84,7 +84,7 @@ module.exports = {
             if (!files || !files.length) return;
             var file = files[0];
             if (this.maxSize && file.size > this.maxSize) return this.$emit('fail', new Error('FILE_SIZE_OVERFLOW'));
-            var toast = this.loading && vant.Toast.loading(this.loadingText);
+            var toast = this.loading && vant.Toast.loading({ message: this.loadingText, duration: 0, forbidClick: true });
             var formData = new FormData();
             formData.append(this.fileKey, file);
             axios[/\/mock\//.test(this.action) ? 'get' : 'post'](this.action, {
@@ -114,4 +114,4 @@ module.exports = {
 };
 </script>
 
-<style src="./css/components/UploadFile.css" scoped />
+<style src="../css/components/UploadFile.css" scoped />

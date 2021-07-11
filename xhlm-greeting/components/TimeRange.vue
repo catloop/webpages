@@ -103,7 +103,7 @@ var WEEK_DAYS = [{
 
 /**
  * 通过时刻字符串获取今天此时刻的时间戳
- * @return {number}
+ * @returns {number}
  */
 function getTimeStampByMoment(momentStr) {
     return moment(moment().format('YYYY-MM-DD ') + momentStr).valueOf();
@@ -115,7 +115,8 @@ module.exports = {
         value: {
             type: Object,
             required: true
-        }
+        },
+        validateRule: Function
     },
     computed: {
         /**
@@ -163,7 +164,11 @@ module.exports = {
          * @returns {void}
          */
         initTempValue: function() {
-            this.tempValue = Object.assign({}, this.value);
+            var tempValue = Object.assign({}, this.value);
+            var nowTime = moment(Date.now()).format('HH:mm');
+            tempValue.startTime = tempValue.startTime || nowTime;
+            tempValue.endTime = tempValue.endTime || nowTime;
+            this.tempValue = tempValue;
         },
         /**
          * 点击选择时间按钮，打开时间选择弹层
@@ -203,7 +208,7 @@ module.exports = {
          * @returns {void}
          */
         onPopupConfirmBtnClickHandler: function() {
-            if (getTimeStampByMoment(this.tempValue.startTime) > getTimeStampByMoment(this.tempValue.endTime)) return vant.Toast.fail('开始时间必须早于结束时间');
+            if (this.validateRule && !this.validateRule(this.tempValue)) return;
             this.$emit('confirm', Object.assign({}, this.tempValue));
             this.showSelectTimePopup = false;
         },
@@ -225,4 +230,4 @@ module.exports = {
 };
 </script>
 
-<style src="./css/components/TimeRange.css" scoped />
+<style src="../css/components/TimeRange.css" scoped />

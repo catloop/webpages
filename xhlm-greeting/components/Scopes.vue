@@ -30,11 +30,11 @@
         </van-radio-group>
 
         <ul
-            v-if="filteredSelectedScopes && filteredSelectedScopes.length"
+            v-if="scopeItems && scopeItems.length"
             class="selected-scopes"
         >
             <li
-                v-for="scope in filteredSelectedScopes"
+                v-for="scope in scopeItems"
                 :key="scope.id"
                 :class="'scope-' + scope.type"
                 class="scope"
@@ -72,8 +72,6 @@
  * @property {DataItem[]} [children]
  */
 
-var getFilteredScopes = window['__UTILS'].getFilteredScopes;
-
 module.exports = {
     name: 'Scopes',
     computed: Object.assign(Vuex.mapState(['trenchs', 'staffAndDepartment']), Vuex.mapState({
@@ -83,20 +81,30 @@ module.exports = {
         scopeType: function(state) {
             return state.greeting.scopeType;
         },
-        scopeIds: function(state) {
-            return state.greeting.scopeIds;
+        scopeItems: function(state) {
+            return state.greeting.scopeItems;
+        },
+        scopeNumber: function(state) {
+            return state.greeting.scopeNumber;
+        },
+        tinyTree: function(state) {
+            return state.greeting.tinyTree;
         }
-    }), {
-        /**
-         * 选择的范围列表，差分处理不同类型
-         */
-        filteredSelectedScopes: function() {
-            return getFilteredScopes(this.scopeType, this.scopeIds, this.staffAndDepartment, this.trenchs);
-        }
-    }),
+    })),
+    data: function() {
+        return {
+            backup: {
+                scopeItems: [],
+                tinyTree: [],
+                scopeNumber: 0
+            }
+        };
+    },
     methods: Object.assign(Vuex.mapMutations({
         setGreetingScopeType: 'SET_GREETING_SCOPE_TYPE',
-        setGreetingScopeIds: 'SET_GREETING_SCOPE_IDS'
+        setGreetingScopeItems: 'SET_GREETING_SCOPE_ITEMS',
+        setGreetingScopeNumber: 'SET_GREETING_SCOPE_NUMBER',
+        setGreetingTinyTree: 'SET_GREETING_TINY_TREE'
     }), {
         /**
          * rem 尺寸取整 px
@@ -121,12 +129,22 @@ module.exports = {
         onRadioClickHandler: function(scopeType) {
             // 值未改变，无操作
             if (scopeType === this.scopeType) return;
-            // 因选择的类型改变，还要清空选择的 id
-            this.setGreetingScopeIds([]);
+            // 准备从备份的数据恢复（或置为空数据）
+            var restore = Object.assign({}, this.backup);
+            this.backup = {
+                scopeItems: this.scopeItems,
+                tinyTree: this.tinyTree,
+                scopeNumber: this.scopeNumber
+            };
+            // 恢复备份或清空数据：如果之前没有保存，即第一次切换，会清空成空初始数据，反之会恢复上一个类型保存的数据
+            // * 这种方式只适合两组数据相交换，若有更多类型，需要改为 map 结构
+            this.setGreetingScopeItems(restore.scopeItems);
+            this.setGreetingTinyTree(restore.tinyTree);
+            this.setGreetingScopeNumber(restore.scopeNumber);
             this.setGreetingScopeType(scopeType);
         }
     })
 };
 </script>
 
-<style src="./css/components/Scopes.css" scoped />
+<style src="../css/components/Scopes.css" scoped />

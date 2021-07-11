@@ -85,6 +85,7 @@
 
                 <TimeRange
                     :value="rule.timeRange"
+                    :validate-rule="timeRangeValidateHandler(index)"
                     @confirm="onTimeRangeConfirmHandler(index, $event)"
                 />
                 
@@ -107,18 +108,25 @@
         </div>
     </script>
     
-    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.9/vue.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.9/vue.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/vuex/3.6.2/vuex.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/vant/2.12.15/vant.min.js"></script>
-    <script src="./js/http-vue-loader.js"></script>
+	<script src="./js/url.js"></script>
+	<script src="./js/http-vue-loader.js"></script>
+	<script>
+	(function() {
+		window.__HTTP_VUE_LOADER_BASE_URL = 'http://localhost:5050/';
+	})();
+	</script>
+	<script src="./js/http-vue-loader.config.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/qs/6.10.1/qs.min.js"></script>
     <script src="./js/chinese-numerals.js"></script>
     <script src="./js/async-validator.js"></script>
     <script src="./js/mock/api.mock.js"></script>
-    <script src="./js/store.js"></script>
     <script src="./js/utils.js"></script>
+    <script src="./js/store.js"></script>
     <script>
     (function() {
         /**
@@ -152,8 +160,9 @@
                 attachments: [],
                 timeRange: {
                     days: [],
-                    startTime: moment(Date.now()).format('HH:mm'),
-                    endTime: moment(Date.now()).format('HH:mm')
+                    startTime: '',
+                    endTime: '',
+                    workDay: false
                 }
             };
         }
@@ -187,11 +196,11 @@
                 greetingContent: function(state) {
                     return state.greeting.content;
                 },
-                daypartingRules: function(state) {
-                    return state.greeting.daypartingRules;
-                },
                 greetingAttachments: function(state) {
                     return state.greeting.attachments;
+                },
+                daypartingRules: function(state) {
+                    return state.greeting.daypartingRules;
                 }
             }), {
                 actionType: {
@@ -233,10 +242,11 @@
                     setGreetingAttachments: 'SET_GREETING_ATTACHMENTS'
                 }),
                 Vuex.mapActions({
-                    getStaffAndDepartment: 'GET_STAFF_AND_DEPARTMENT',
+                    getDepartmentChildrenById: 'GET_DEPARTMENT_CHILDREN_BY_ID',
                     getTrenchs: 'GET_TRENCHS',
                     getContentLibrary: 'GET_CONTENT_LIBRARY',
-                    getServiceInfo: 'GET_SERVICE_INFO'
+                    getServiceInfo: 'GET_SERVICE_INFO',
+                    getTreeByTinyTree: 'GET_TREE_BY_TINY_TREE'
                 }),
                 {
                 /**
@@ -244,11 +254,12 @@
                  * @returns {Promise<void>}
                 */
                 initAsyncData: function() {
-                    var toast = vant.Toast.loading('加载中');
-                    return Promise.all([this.getStaffAndDepartment(), this.getTrenchs(), this.getContentLibrary(), this.getServiceInfo()])
-                        .then(function() {
-                            toast.clear();
-                        });
+                    return Promise.all([
+                        this.getDepartmentChildrenById(),
+                        this.getTrenchs(),
+                        this.getContentLibrary(),
+                        this.getServiceInfo()
+                    ]);
                 },
                 /**
                  * 加载编辑数据
@@ -257,14 +268,12 @@
                 getGreeting: function() {
                     var _this = this;
                     // 加载编辑数据
-                    var toast = vant.Toast.loading('加载中');
                     return axios.get(window['__MOCK_API'].getGreetingById, {
                         params: {
                             id: _this.id
                         }
                     })
                         .then(function(response) {
-                            toast.clear();
                             if (!response.data.success) return vant.Toast.fail(response.data.alertMsg);
                             _this.setGreeting(response.data.data);
                         });
@@ -400,6 +409,58 @@
                     return [].concat(this.daypartingRules);
                 },
                 /**
+                 * 生成时间段校验方法的柯里方法
+                 * @param {number} index 分时段规则配置对象的下标
+                 * @returns {(timeRange: TimeRange) => boolean}
+                */
+                timeRangeValidateHandler: function(index) {
+                    var _this = this;
+                    function numberlize(time) {
+                        var timeArr = time.split(':');
+                        var hours = ~~timeArr[0];
+                        var minutes = ~~timeArr[1];
+                        return hours * 60 + minutes;
+                    }
+                    /**
+                     * 生成时间段校验方法本法
+                     * @param {TimeRange} timeRange
+                     * @returns {boolean}
+                    */
+                    function timeRangeValidateHandler(timeRange) {
+                        var startTimeNum = numberlize(timeRange.startTime);
+                        var endTimeNum = numberlize(timeRange.endTime);
+                        if (startTimeNum > endTimeNum) {
+                            vant.Toast.fail('开始时间必须早于结束时间');
+                            return false;
+                        }
+                        var isWorkDay = timeRange.workDay;
+                        if (_this.daypartingRules.filter(function(rule, idx) {
+                            // 排除类型不同的和自身
+                            return idx !== index && rule.timeRange.workDay === isWorkDay;
+                        }).some(function(rule) {
+                            var ruleStartTime = rule.timeRange.startTime;
+                            var ruleEndTime = rule.timeRange.endTime;
+                            // 没有选择的空值不纳入校验
+                            if (!ruleStartTime || !ruleEndTime) return false;
+                            var ruleStartTimeNum = numberlize(ruleStartTime);
+                            var ruleEndTimeNum = numberlize(ruleEndTime);
+                            return (startTimeNum <= ruleStartTimeNum && endTimeNum >= ruleStartTimeNum) // 结束时间重合
+                                || (startTimeNum <= ruleEndTimeNum && endTimeNum >= ruleEndTimeNum) // 开始时间重合
+                                || (startTimeNum >= ruleStartTimeNum && endTimeNum <= ruleEndTimeNum) // 整体被包含
+                                || (startTimeNum <= ruleStartTimeNum && endTimeNum >= ruleEndTimeNum); // 当前选择的时间段包含已存在的时间段
+                        })) {
+                            vant.Toast.fail('同类型时间\n段不可重合');  
+                            return false;
+                        }
+                        if (!timeRange.days.length && !timeRange.workDay) {
+                            vant.Toast.fail('请选择星期\n或工作日');
+                            return false;
+                        }
+                        return true;
+                    }
+                    return timeRangeValidateHandler;
+                },
+                /**
                  * 分时段规则确认选择时间
                  * @param {number} 规则下标
                  * @param {TimeRange} timeRange 时间段配置对象
@@ -432,11 +493,55 @@
                     this.setDaypartingRules(daypartingRules);
                 },
                 /**
+                 * 保存前校验
+                */
+                validateBeforeSave: function() {
+                    if (!this.greeting.scopeItems.length) {
+                        vant.Toast.fail('未选择\n使用范围');
+                        return false;
+                    }
+                    if (!this.greetingContent) {
+                        vant.Toast.fail('未填写欢迎语');
+                        return false;
+                    }
+                    if (!this.greeting.attachments.length) {
+                        vant.Toast.fail('未添加素材');
+                        return false;
+                    }
+                    if (!this.greeting.attachments.length) {
+                        vant.Toast.fail('未添加素材');
+                        return false;
+                    }
+                    var dayPartingLength = this.daypartingRules.length;
+                    while (dayPartingLength--) {
+                        var rule = this.daypartingRules[dayPartingLength];
+                        var chineseOrder = '时段' + chineseNumerals.converter(dayPartingLength + 1);
+                        if (
+                            !rule.timeRange.startTime
+                            || !rule.timeRange.endTime
+                            || (!rule.timeRange.days.length && !rule.timeRange.workDay)
+                        ) {
+                            vant.Toast.fail(chineseOrder + '\n未选择时间');
+                            return false;
+                        }
+                        if (!rule.content) {
+                            vant.Toast.fail(chineseOrder + '\n未填写欢迎语');
+                            return false;
+                        }
+                        if (!rule.attachments.length) {
+                            vant.Toast.fail(chineseOrder + '\n未添加素材');
+                            return false;
+                        }
+                    }
+                    return true;
+                },
+                /**
                  * 点击保存按钮
                  * @returns {void}
                 */
                 onSaveBtnClickHandler: function() {
-                    var toast = vant.Toast.loading('正在保存');
+                    if (!this.validateBeforeSave()) return;
+                    var toast = vant.Toast.loading({ message: '加载中', duration: 0, forbidClick: true });
                     var data = this.greeting;
                     axios.get(window['__MOCK_API'].successNoData, {
                         data: data
@@ -456,15 +561,21 @@
             mounted: function() {
                 var _this = this;
 
+                var toast = vant.Toast.loading({ message: '加载中', duration: 0, forbidClick: true });
                 // 加载异步数据
                 this.initAsyncData()
                     .then(function() {
                         // 记录入参
                         var query = Qs.parse(window.location.search.substr(1));
-                        if (query.action !== 'edit') return;
+                        if (query.action !== 'edit') return toast.clear();
                         this.actionType = query.action;
                         this.id = query.id;
-                        _this.getGreeting();
+                        _this.getGreeting().then(function() {
+                            _this.getTreeByTinyTree().then(function() {
+                                console.log('123123123');
+                                toast.clear();
+                            });
+                        });
                     });
             }
         });

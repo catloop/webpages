@@ -278,4 +278,4 @@ module.exports = {
 };
 </script>
 
-<style src="./css/components/AddMiniProgramPopup.css" scoped />
+<style src="../css/components/AddMiniProgramPopup.css" scoped />

@@ -8,28 +8,529 @@
             "creator": "张珊",
             "createTime": 1619065200000,
             "scopeType": "BY_STAFF_AND_DEPARTMENT",
-            "scopeIds": [
-                58,
-                59,
-                56,
-                54,
-                55,
-                52,
-                50,
-                51,
-                48,
-                38,
-                27,
-                21,
-                22,
-                23,
-                24,
-                25,
-                26,
-                11,
-                13,
-                28
+            "scopeItems": [
+                {
+                    "id": "82000e3c-6f3b-4231-a6d7-1286557aff6c",
+                    "type": "department",
+                    "name": "东城区移动"
+                },
+                {
+                    "id": "4c31e44f-c3df-494e-93b0-030347a1971a",
+                    "type": "department",
+                    "name": "西城区移动"
+                },
+                {
+                    "id": "e7062e14-07b0-455a-9f3c-2ca5138f8876",
+                    "type": "department",
+                    "name": "石景山区移动"
+                },
+                {
+                    "id": "61d0e83c-a3c0-4c66-972b-b34a8e95873c",
+                    "type": "department",
+                    "name": "海淀区移动"
+                },
+                {
+                    "id": "860062b0-5782-40fe-b19c-74bcf60482e2",
+                    "type": "department",
+                    "name": "门头沟区移动"
+                },
+                {
+                    "id": "4d258a3a-5254-4f63-b8b8-89973741bf12",
+                    "type": "department",
+                    "name": "房山区移动"
+                },
+                {
+                    "id": "2685bf40-3987-4630-ac13-fcb618cda9b3",
+                    "type": "department",
+                    "name": "通州区移动"
+                },
+                {
+                    "id": "3b228dee-22a6-4f0d-a564-d6cacd8a09d9",
+                    "type": "department",
+                    "name": "顺义区移动"
+                },
+                {
+                    "id": "42bec72d-4a12-4711-bce9-b636875fecde",
+                    "type": "department",
+                    "name": "昌平区移动"
+                },
+                {
+                    "id": "dedb753e-7903-4a49-8cd2-3d4e0d1e87b9",
+                    "type": "department",
+                    "name": "大兴区移动"
+                },
+                {
+                    "id": "0d232e6f-c96a-4b6e-81a8-3d6469583c9a",
+                    "type": "department",
+                    "name": "怀柔区移动"
+                },
+                {
+                    "id": "e5133244-95ab-4904-9cfe-d1b2155eb2b2",
+                    "type": "department",
+                    "name": "平谷区移动"
+                },
+                {
+                    "id": "3cc55d09-eb31-44f8-983c-b8877218b85f",
+                    "type": "department",
+                    "name": "密云区移动"
+                },
+                {
+                    "id": "945dfdd7-38d7-48c9-a21c-dd4059ca5a39",
+                    "type": "department",
+                    "name": "延庆区移动"
+                },
+                {
+                    "id": "6f2b73da-5b97-42e9-8fd7-bace83f3d5c0",
+                    "type": "staff",
+                    "name": "荣寇",
+                    "avatar": "https://i.pravatar.cc/150?u=6f2b73da-5b97-42e9-8fd7-bace83f3d5c0"
+                },
+                {
+                    "id": "f2259447-7ae7-4a59-bf14-60d923fc02d1",
+                    "type": "staff",
+                    "name": "毕段",
+                    "avatar": "https://i.pravatar.cc/150?u=f2259447-7ae7-4a59-bf14-60d923fc02d1"
+                },
+                {
+                    "id": "3cda8b2c-69b9-4c75-a08f-1cbe93829312",
+                    "type": "staff",
+                    "name": "卢藏右坟",
+                    "avatar": "https://i.pravatar.cc/150?u=3cda8b2c-69b9-4c75-a08f-1cbe93829312"
+                },
+                {
+                    "id": "b6a43c86-a992-4be3-8fa1-b99ca96c2c46",
+                    "type": "staff",
+                    "name": "卓昶",
+                    "avatar": "https://i.pravatar.cc/150?u=b6a43c86-a992-4be3-8fa1-b99ca96c2c46"
+                },
+                {
+                    "id": "7ec4e522-ef98-4127-9338-2116b1c5d4f1",
+                    "type": "staff",
+                    "name": "秦裟",
+                    "avatar": "https://i.pravatar.cc/150?u=7ec4e522-ef98-4127-9338-2116b1c5d4f1"
+                },
+                {
+                    "id": "9f4b9baa-60c3-4492-9dbf-fc21f39385f3",
+                    "type": "staff",
+                    "name": "焦偃堡秃",
+                    "avatar": "https://i.pravatar.cc/150?u=9f4b9baa-60c3-4492-9dbf-fc21f39385f3"
+                },
+                {
+                    "id": "df407d59-46f1-400f-bd17-3804257b0cbc",
+                    "type": "staff",
+                    "name": "单驾炬",
+                    "avatar": "https://i.pravatar.cc/150?u=df407d59-46f1-400f-bd17-3804257b0cbc"
+                },
+                {
+                    "id": "c99f4adb-a4f1-4dae-bdb7-0529962d4ae9",
+                    "type": "staff",
+                    "name": "古胜儿绳",
+                    "avatar": "https://i.pravatar.cc/150?u=c99f4adb-a4f1-4dae-bdb7-0529962d4ae9"
+                },
+                {
+                    "id": "f044941e-fa28-4eee-b6ec-8a24fc8e3537",
+                    "type": "staff",
+                    "name": "席揭",
+                    "avatar": "https://i.pravatar.cc/150?u=f044941e-fa28-4eee-b6ec-8a24fc8e3537"
+                },
+                {
+                    "id": "67be83a5-1b9c-4d7c-8050-6e353b29b440",
+                    "type": "staff",
+                    "name": "贝蓁哲",
+                    "avatar": "https://i.pravatar.cc/150?u=67be83a5-1b9c-4d7c-8050-6e353b29b440"
+                },
+                {
+                    "id": "97a444b9-54b7-4ca4-a262-188c4ee5f57c",
+                    "type": "staff",
+                    "name": "暴救丙焚",
+                    "avatar": "https://i.pravatar.cc/150?u=97a444b9-54b7-4ca4-a262-188c4ee5f57c"
+                },
+                {
+                    "id": "c94d31ef-ec7c-41f2-be4c-98ed38f39afa",
+                    "type": "staff",
+                    "name": "邢殖",
+                    "avatar": "https://i.pravatar.cc/150?u=c94d31ef-ec7c-41f2-be4c-98ed38f39afa"
+                },
+                {
+                    "id": "7c7e6c9c-c7d3-4e83-8896-31038d97c60e",
+                    "type": "staff",
+                    "name": "项高共",
+                    "avatar": "https://i.pravatar.cc/150?u=7c7e6c9c-c7d3-4e83-8896-31038d97c60e"
+                },
+                {
+                    "id": "23e2458a-e7ba-4929-87b1-81959358bad6",
+                    "type": "staff",
+                    "name": "储沾",
+                    "avatar": "https://i.pravatar.cc/150?u=23e2458a-e7ba-4929-87b1-81959358bad6"
+                },
+                {
+                    "id": "bb366d25-15c9-40c0-8f33-e4655d037e79",
+                    "type": "staff",
+                    "name": "万裕",
+                    "avatar": "https://i.pravatar.cc/150?u=bb366d25-15c9-40c0-8f33-e4655d037e79"
+                },
+                {
+                    "id": "c14a1cf5-2952-434d-aad2-da767a6b4845",
+                    "type": "staff",
+                    "name": "居儿",
+                    "avatar": "https://i.pravatar.cc/150?u=c14a1cf5-2952-434d-aad2-da767a6b4845"
+                },
+                {
+                    "id": "f1787626-b440-41e5-a469-6af37712833f",
+                    "type": "staff",
+                    "name": "钱友",
+                    "avatar": "https://i.pravatar.cc/150?u=f1787626-b440-41e5-a469-6af37712833f"
+                },
+                {
+                    "id": "399e41e6-0995-4938-bb4b-a81b1211b8fa",
+                    "type": "staff",
+                    "name": "皮溢行",
+                    "avatar": "https://i.pravatar.cc/150?u=399e41e6-0995-4938-bb4b-a81b1211b8fa"
+                },
+                {
+                    "id": "67ef5a8d-7808-4243-b2a0-8328e44f4338",
+                    "type": "staff",
+                    "name": "习块",
+                    "avatar": "https://i.pravatar.cc/150?u=67ef5a8d-7808-4243-b2a0-8328e44f4338"
+                },
+                {
+                    "id": "96bd925f-b3d4-4fd7-8009-d2959ab90372",
+                    "type": "staff",
+                    "name": "贝察",
+                    "avatar": "https://i.pravatar.cc/150?u=96bd925f-b3d4-4fd7-8009-d2959ab90372"
+                },
+                {
+                    "id": "126e5f5d-9bda-4fa2-a97d-f100225fb11b",
+                    "type": "staff",
+                    "name": "贾烧贻",
+                    "avatar": "https://i.pravatar.cc/150?u=126e5f5d-9bda-4fa2-a97d-f100225fb11b"
+                },
+                {
+                    "id": "725d5e28-d558-4b45-9be8-c910a4966e2a",
+                    "type": "staff",
+                    "name": "于岚",
+                    "avatar": "https://i.pravatar.cc/150?u=725d5e28-d558-4b45-9be8-c910a4966e2a"
+                },
+                {
+                    "id": "828f909e-3418-49fd-9bab-3d6065ad49a2",
+                    "type": "staff",
+                    "name": "祝缇",
+                    "avatar": "https://i.pravatar.cc/150?u=828f909e-3418-49fd-9bab-3d6065ad49a2"
+                },
+                {
+                    "id": "97dea9d7-3efa-484c-b12b-50a93d495f6a",
+                    "type": "staff",
+                    "name": "那拉武",
+                    "avatar": "https://i.pravatar.cc/150?u=97dea9d7-3efa-484c-b12b-50a93d495f6a"
+                },
+                {
+                    "id": "8c469ad3-1fed-44ef-b21f-6f79d0e4ecc5",
+                    "type": "staff",
+                    "name": "终荧",
+                    "avatar": "https://i.pravatar.cc/150?u=8c469ad3-1fed-44ef-b21f-6f79d0e4ecc5"
+                },
+                {
+                    "id": "5a354da8-b42b-422f-b74c-2c234d87234d",
+                    "type": "staff",
+                    "name": "充贰",
+                    "avatar": "https://i.pravatar.cc/150?u=5a354da8-b42b-422f-b74c-2c234d87234d"
+                },
+                {
+                    "id": "3d2c3329-03ab-473c-8671-6a7f580f9737",
+                    "type": "staff",
+                    "name": "祁划",
+                    "avatar": "https://i.pravatar.cc/150?u=3d2c3329-03ab-473c-8671-6a7f580f9737"
+                },
+                {
+                    "id": "c06eb542-a9d9-45de-8335-3c98cfbc2e6d",
+                    "type": "staff",
+                    "name": "单蠡钿",
+                    "avatar": "https://i.pravatar.cc/150?u=c06eb542-a9d9-45de-8335-3c98cfbc2e6d"
+                },
+                {
+                    "id": "5b3832e8-30f6-4cc3-99f0-5498f5b8b97b",
+                    "type": "staff",
+                    "name": "红炀",
+                    "avatar": "https://i.pravatar.cc/150?u=5b3832e8-30f6-4cc3-99f0-5498f5b8b97b"
+                },
+                {
+                    "id": "01bbbd3c-db46-4549-a926-86b7f1c2f2f3",
+                    "type": "staff",
+                    "name": "骆足僚",
+                    "avatar": "https://i.pravatar.cc/150?u=01bbbd3c-db46-4549-a926-86b7f1c2f2f3"
+                },
+                {
+                    "id": "c8ee195e-8032-4d17-a363-d14ee568b57f",
+                    "type": "staff",
+                    "name": "宦隐盐",
+                    "avatar": "https://i.pravatar.cc/150?u=c8ee195e-8032-4d17-a363-d14ee568b57f"
+                },
+                {
+                    "id": "5ab5e158-de54-41a1-8462-fa56cd322a6b",
+                    "type": "staff",
+                    "name": "鲍越豌",
+                    "avatar": "https://i.pravatar.cc/150?u=5ab5e158-de54-41a1-8462-fa56cd322a6b"
+                },
+                {
+                    "id": "9b5097bc-0340-484b-bdac-15f2863f07a0",
+                    "type": "staff",
+                    "name": "松速臣",
+                    "avatar": "https://i.pravatar.cc/150?u=9b5097bc-0340-484b-bdac-15f2863f07a0"
+                },
+                {
+                    "id": "e382b672-142c-4ea0-8b27-e2aa4960eb0c",
+                    "type": "staff",
+                    "name": "邬愤",
+                    "avatar": "https://i.pravatar.cc/150?u=e382b672-142c-4ea0-8b27-e2aa4960eb0c"
+                },
+                {
+                    "id": "9e5406f7-3823-4cfd-991e-18fa4972c2f7",
+                    "type": "staff",
+                    "name": "祝焚",
+                    "avatar": "https://i.pravatar.cc/150?u=9e5406f7-3823-4cfd-991e-18fa4972c2f7"
+                },
+                {
+                    "id": "ec7c94ce-b3c6-49f1-bc89-0bb32baf331e",
+                    "type": "staff",
+                    "name": "俞康",
+                    "avatar": "https://i.pravatar.cc/150?u=ec7c94ce-b3c6-49f1-bc89-0bb32baf331e"
+                },
+                {
+                    "id": "3ee380fe-d8eb-4ab4-a68b-9c0706ad9c23",
+                    "type": "staff",
+                    "name": "谭弦洁",
+                    "avatar": "https://i.pravatar.cc/150?u=3ee380fe-d8eb-4ab4-a68b-9c0706ad9c23"
+                },
+                {
+                    "id": "9660f1d0-5869-4d54-b22b-68ebe295fd6e",
+                    "type": "staff",
+                    "name": "扈玄",
+                    "avatar": "https://i.pravatar.cc/150?u=9660f1d0-5869-4d54-b22b-68ebe295fd6e"
+                },
+                {
+                    "id": "0cc5b5f4-3e75-4d93-96b5-ae26be597640",
+                    "type": "staff",
+                    "name": "狄崔",
+                    "avatar": "https://i.pravatar.cc/150?u=0cc5b5f4-3e75-4d93-96b5-ae26be597640"
+                },
+                {
+                    "id": "031acaf2-b11b-47dc-a74e-63d19853bda2",
+                    "type": "staff",
+                    "name": "全越璎",
+                    "avatar": "https://i.pravatar.cc/150?u=031acaf2-b11b-47dc-a74e-63d19853bda2"
+                },
+                {
+                    "id": "2232f108-50b4-4d9d-b3d6-46c66592b8de",
+                    "type": "staff",
+                    "name": "杜侵",
+                    "avatar": "https://i.pravatar.cc/150?u=2232f108-50b4-4d9d-b3d6-46c66592b8de"
+                },
+                {
+                    "id": "08e88a79-5675-44c1-9009-9593a583dcf1",
+                    "type": "staff",
+                    "name": "蒲项伤",
+                    "avatar": "https://i.pravatar.cc/150?u=08e88a79-5675-44c1-9009-9593a583dcf1"
+                },
+                {
+                    "id": "41419b74-4ea4-4c4c-977b-e2be548b2ef4",
+                    "type": "staff",
+                    "name": "应铸育",
+                    "avatar": "https://i.pravatar.cc/150?u=41419b74-4ea4-4c4c-977b-e2be548b2ef4"
+                },
+                {
+                    "id": "05cde3be-e15c-4c49-8013-9d37ed5d986b",
+                    "type": "staff",
+                    "name": "申响毖",
+                    "avatar": "https://i.pravatar.cc/150?u=05cde3be-e15c-4c49-8013-9d37ed5d986b"
+                },
+                {
+                    "id": "ae4c128a-6027-4597-986b-32c7932942eb",
+                    "type": "staff",
+                    "name": "麻仿",
+                    "avatar": "https://i.pravatar.cc/150?u=ae4c128a-6027-4597-986b-32c7932942eb"
+                },
+                {
+                    "id": "6380e3ab-3ca8-4364-865e-a3990de73cb4",
+                    "type": "staff",
+                    "name": "茹粽紧",
+                    "avatar": "https://i.pravatar.cc/150?u=6380e3ab-3ca8-4364-865e-a3990de73cb4"
+                },
+                {
+                    "id": "a780e56b-e06e-400c-9ba1-4982109314cb",
+                    "type": "staff",
+                    "name": "简粗倪",
+                    "avatar": "https://i.pravatar.cc/150?u=a780e56b-e06e-400c-9ba1-4982109314cb"
+                },
+                {
+                    "id": "ce0df5ef-c844-4a4e-91cd-527dbbaf6fde",
+                    "type": "staff",
+                    "name": "祢市刀",
+                    "avatar": "https://i.pravatar.cc/150?u=ce0df5ef-c844-4a4e-91cd-527dbbaf6fde"
+                },
+                {
+                    "id": "b32ca33c-e743-42a2-a940-b76e82c8e748",
+                    "type": "staff",
+                    "name": "邰督谈",
+                    "avatar": "https://i.pravatar.cc/150?u=b32ca33c-e743-42a2-a940-b76e82c8e748"
+                },
+                {
+                    "id": "208b8f8b-9d65-43a8-86a9-b0c4c1b29717",
+                    "type": "staff",
+                    "name": "元半穆",
+                    "avatar": "https://i.pravatar.cc/150?u=208b8f8b-9d65-43a8-86a9-b0c4c1b29717"
+                },
+                {
+                    "id": "60a14926-33b5-41c7-906b-6c5a647d4104",
+                    "type": "staff",
+                    "name": "怀唐",
+                    "avatar": "https://i.pravatar.cc/150?u=60a14926-33b5-41c7-906b-6c5a647d4104"
+                },
+                {
+                    "id": "35d7a7b6-2761-48e8-b21f-6672a4dca1ee",
+                    "type": "staff",
+                    "name": "殷姜",
+                    "avatar": "https://i.pravatar.cc/150?u=35d7a7b6-2761-48e8-b21f-6672a4dca1ee"
+                },
+                {
+                    "id": "fedccdc1-1fd6-4b89-8d2c-b67dd12a2eb0",
+                    "type": "staff",
+                    "name": "缪获密",
+                    "avatar": "https://i.pravatar.cc/150?u=fedccdc1-1fd6-4b89-8d2c-b67dd12a2eb0"
+                },
+                {
+                    "id": "6781fb31-d724-4d79-8c27-af48c14003d2",
+                    "type": "staff",
+                    "name": "钭谒绅",
+                    "avatar": "https://i.pravatar.cc/150?u=6781fb31-d724-4d79-8c27-af48c14003d2"
+                },
+                {
+                    "id": "558eb9ed-d388-49e7-8830-2173e198ce80",
+                    "type": "staff",
+                    "name": "霍郎丹",
+                    "avatar": "https://i.pravatar.cc/150?u=558eb9ed-d388-49e7-8830-2173e198ce80"
+                },
+                {
+                    "id": "d1244389-92aa-493c-83f0-a674cc059f7f",
+                    "type": "staff",
+                    "name": "储一",
+                    "avatar": "https://i.pravatar.cc/150?u=d1244389-92aa-493c-83f0-a674cc059f7f"
+                },
+                {
+                    "id": "c07e24a8-2403-40fe-a612-6be5287f0866",
+                    "type": "staff",
+                    "name": "严骑",
+                    "avatar": "https://i.pravatar.cc/150?u=c07e24a8-2403-40fe-a612-6be5287f0866"
+                },
+                {
+                    "id": "be4105d4-6265-4719-a631-510f5f5ec5ce",
+                    "type": "staff",
+                    "name": "通味",
+                    "avatar": "https://i.pravatar.cc/150?u=be4105d4-6265-4719-a631-510f5f5ec5ce"
+                },
+                {
+                    "id": "90033dbc-7983-40fa-aacb-0c8b6dfe3846",
+                    "type": "staff",
+                    "name": "陈曲篡",
+                    "avatar": "https://i.pravatar.cc/150?u=90033dbc-7983-40fa-aacb-0c8b6dfe3846"
+                },
+                {
+                    "id": "5024c94b-55eb-4c27-9c4b-14c9b3d677ff",
+                    "type": "staff",
+                    "name": "怀贵京",
+                    "avatar": "https://i.pravatar.cc/150?u=5024c94b-55eb-4c27-9c4b-14c9b3d677ff"
+                },
+                {
+                    "id": "cc5279c4-7fde-4f2d-90f1-2aa26d31f42d",
+                    "type": "staff",
+                    "name": "陶径杷",
+                    "avatar": "https://i.pravatar.cc/150?u=cc5279c4-7fde-4f2d-90f1-2aa26d31f42d"
+                },
+                {
+                    "id": "741c1c79-18c0-4817-8942-ba4e44b7f5f8",
+                    "type": "staff",
+                    "name": "冀劫",
+                    "avatar": "https://i.pravatar.cc/150?u=741c1c79-18c0-4817-8942-ba4e44b7f5f8"
+                },
+                {
+                    "id": "605f4084-00a4-438f-b701-072fd3110a8d",
+                    "type": "staff",
+                    "name": "池折殿",
+                    "avatar": "https://i.pravatar.cc/150?u=605f4084-00a4-438f-b701-072fd3110a8d"
+                },
+                {
+                    "id": "4e3267e0-3518-4bd2-8608-fca1930f1be4",
+                    "type": "staff",
+                    "name": "费傍抑",
+                    "avatar": "https://i.pravatar.cc/150?u=4e3267e0-3518-4bd2-8608-fca1930f1be4"
+                },
+                {
+                    "id": "75b77e10-2795-4cd0-815d-a1d6ae45700b",
+                    "type": "staff",
+                    "name": "夕竟本",
+                    "avatar": "https://i.pravatar.cc/150?u=75b77e10-2795-4cd0-815d-a1d6ae45700b"
+                },
+                {
+                    "id": "bfeac3ed-46db-4407-8ef2-bcfdbbd75d14",
+                    "type": "staff",
+                    "name": "韦革",
+                    "avatar": "https://i.pravatar.cc/150?u=bfeac3ed-46db-4407-8ef2-bcfdbbd75d14"
+                },
+                {
+                    "id": "bd8f8d22-a835-48aa-a4be-540c0d3e6737",
+                    "type": "staff",
+                    "name": "屈订",
+                    "avatar": "https://i.pravatar.cc/150?u=bd8f8d22-a835-48aa-a4be-540c0d3e6737"
+                },
+                {
+                    "id": "6591061c-ccb6-4955-9507-3fc11201f42c",
+                    "type": "staff",
+                    "name": "滑钿",
+                    "avatar": "https://i.pravatar.cc/150?u=6591061c-ccb6-4955-9507-3fc11201f42c"
+                },
+                {
+                    "id": "51fd3bb7-6587-4b25-bca2-84a5c877f861",
+                    "type": "staff",
+                    "name": "薛幅",
+                    "avatar": "https://i.pravatar.cc/150?u=51fd3bb7-6587-4b25-bca2-84a5c877f861"
+                },
+                {
+                    "id": "cb9841e7-ef25-47e1-a9a6-d8b5ba8915b4",
+                    "type": "staff",
+                    "name": "计霜灞",
+                    "avatar": "https://i.pravatar.cc/150?u=cb9841e7-ef25-47e1-a9a6-d8b5ba8915b4"
+                },
+                {
+                    "id": "e6a79998-8402-4390-ada0-8b5d4c3d91e3",
+                    "type": "staff",
+                    "name": "弘劈砧",
+                    "avatar": "https://i.pravatar.cc/150?u=e6a79998-8402-4390-ada0-8b5d4c3d91e3"
+                },
+                {
+                    "id": "55dee7ff-d77f-49a1-b5f7-4557ad434060",
+                    "type": "staff",
+                    "name": "经泺",
+                    "avatar": "https://i.pravatar.cc/150?u=55dee7ff-d77f-49a1-b5f7-4557ad434060"
+                },
+                {
+                    "id": "e893f9dd-2362-4989-b289-8e1322fa0707",
+                    "type": "staff",
+                    "name": "阳缆乃",
+                    "avatar": "https://i.pravatar.cc/150?u=e893f9dd-2362-4989-b289-8e1322fa0707"
+                },
+                {
+                    "id": "b8f3970e-fa49-43f5-b017-ad214a440035",
+                    "type": "staff",
+                    "name": "郭扁",
+                    "avatar": "https://i.pravatar.cc/150?u=b8f3970e-fa49-43f5-b017-ad214a440035"
+                },
+                {
+                    "id": "14f8801e-151d-4866-89a1-65e4c272817b",
+                    "type": "staff",
+                    "name": "翟慧",
+                    "avatar": "https://i.pravatar.cc/150?u=14f8801e-151d-4866-89a1-65e4c272817b"
+                }
             ],
+            "scopeNumber": 23333,
             "content": "欢迎语#用户昵称#；#员工姓名#；",
             "attachments": [
                 {
@@ -81,15 +582,57 @@
         {
             "id": 2,
             "scopeType": "BY_TRENCH",
-            "scopeIds": [
-                233,
-                234,
-                235,
-                236,
-                237,
-                243,
-                242
+            "scopeItems": [
+                {
+                    "id": 234,
+                    "name": "Basis 狗屁不通",
+                    "type": "trench",
+                    "avatar": "https://via.placeholder.com/100x100"
+                },
+                {
+                    "id": 235,
+                    "name": "Milestone 狗屁不通",
+                    "type": "trench",
+                    "avatar": "https://via.placeholder.com/100x100"
+                },
+                {
+                    "id": 236,
+                    "name": "Significant 狗屁不通",
+                    "type": "trench",
+                    "avatar": "https://via.placeholder.com/100x100"
+                },
+                {
+                    "id": 237,
+                    "name": "狗屁不通",
+                    "type": "trench",
+                    "avatar": "https://via.placeholder.com/100x100"
+                },
+                {
+                    "id": 238,
+                    "name": "Cocktail 狗屁不通",
+                    "type": "trench",
+                    "avatar": "https://via.placeholder.com/100x100"
+                },
+                {
+                    "id": 240,
+                    "name": "狗屁不通",
+                    "type": "trench",
+                    "avatar": "https://via.placeholder.com/100x100"
+                },
+                {
+                    "id": 241,
+                    "name": "狗屁不通",
+                    "type": "trench",
+                    "avatar": "https://via.placeholder.com/100x100"
+                },
+                {
+                    "id": 242,
+                    "name": "狗屁不通",
+                    "type": "trench",
+                    "avatar": "https://via.placeholder.com/100x100"
+                }
             ],
+            "scopeNumber": 8,
             "content": "狗屁不通的欢迎语#员工姓名#；",
             "attachments": [
                 {

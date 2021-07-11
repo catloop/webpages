@@ -15,7 +15,7 @@
             <li
                 v-for="trench in filteredTrenchs"
                 :key="trench.id"
-                @click="onTranchClickHandler(trench.id)"
+                @click="onTranchClickHandler(trench)"
                 class="trench"
             >
                 <van-checkbox
@@ -58,7 +58,7 @@
                 class="confirm-btn btn btn-large btn-primary btn-rounded"
             >
                 确定
-                <span class="select-counter">（已选{{ selectedIds.length }}个渠道）</span>
+                <span class="select-counter">（已选{{ selectedItems.length }}个渠道）</span>
             </button>
         </div>
     </van-popup>
@@ -80,7 +80,7 @@ var HASH_PREFIX = 'selectTrench:/';
  */
 function getDefaultData() {
     return {
-        selectedIds: [],
+        selectedItems: [],
         inSearch: false,
         searchText: ''
     };
@@ -98,8 +98,8 @@ module.exports = {
         }
     },
     computed: Object.assign(Vuex.mapState(['trenchs']), Vuex.mapState({
-        scopeIds: function(state) {
-            return state.greeting.scopeIds;
+        scopeItems: function(state) {
+            return state.greeting.scopeItems;
         }
     }), {
         /**
@@ -118,7 +118,7 @@ module.exports = {
          * @returns {boolean}
          */
         isAllSelected: function() {
-            return this.selectedIds.length === this.trenchs.length;
+            return this.selectedItems.length === this.trenchs.length;
         }
     }),
     watch: {
@@ -130,7 +130,8 @@ module.exports = {
         return getDefaultData();
     },
     methods: Object.assign(Vuex.mapMutations({
-        setGreetingScopeIds: 'SET_GREETING_SCOPE_IDS'
+        setGreetingScopeItems: 'SET_GREETING_SCOPE_ITEMS',
+        setGreetingScopeNumber: 'SET_GREETING_SCOPE_NUMBER'
     }),
     {
         /**
@@ -176,14 +177,16 @@ module.exports = {
         },
         /**
          * 切换渠道选择状态
-         * @param {number} trenchId 渠道 ID
+         * @param {number} trench 渠道对象
          * @returns {void}
          */
-        onTranchClickHandler: function(trenchId) {
-            if (this.selectedIds.includes(trenchId)) return this.selectedIds = this.selectedIds.filter(function(id) {
-                return id !== trenchId;
+        onTranchClickHandler: function(trench) {
+            if (this.selectedItems.some(function(t) {
+                return t.id === trench.id;
+            })) return this.selectedItems = this.selectedItems.filter(function(t) {
+                return t.id !== trench.id;
             });
-            this.selectedIds.push(trenchId);
+            this.selectedItems.push(trench);
         },
         /**
          * 渠道是否被选择
@@ -191,23 +194,18 @@ module.exports = {
          * @returns {boolean}
          */
         isTrenchSelected: function(trenchId) {
-            return this.selectedIds.includes(trenchId);
+            return this.selectedItems.some(function(trench) {
+                return trench.id === trenchId;
+            });
         },
         /**
          * 全选复选框点击
          * @returns {void}
          */
         onSelectAllCheckboxClickHandler: function() {
-            this.selectedIds = this.isAllSelected
+            this.selectedItems = this.isAllSelected
                 ? []
-                : this.trenchs.map(
-                    /**
-                     * @param {Trench} trench
-                     */
-                    function(trench) {
-                        return trench.id;
-                    }
-                );
+                : [].concat(this.trenchs);
         },
         /**
          * 初始化组件状态
@@ -219,7 +217,7 @@ module.exports = {
             Object.keys(defaultData).forEach(function(key) {
                 _this[key] = defaultData[key];
             });
-            this.selectedIds = [].concat(this.scopeIds);
+            this.selectedItems = [].concat(this.scopeItems);
         },
         /**
          * 打开弹层
@@ -243,9 +241,10 @@ module.exports = {
          * @returns {void}
          */
         onConfirmHandler: function() {
-            this.setGreetingScopeIds(this.selectedIds);
+            this.setGreetingScopeItems(this.selectedItems);
+            this.setGreetingScopeNumber(this.selectedItems.length);
             this.close();
-            this.$emit('confirm', this.selectedIds);
+            this.$emit('confirm', this.selectedItems);
         }
     }),
     mounted: function() {
@@ -258,4 +257,4 @@ module.exports = {
 };
 </script>
 
-<style src="./css/components/SelectTrenchPopup.css" scoped />
+<style src="../css/components/SelectTrenchPopup.css" scoped />
