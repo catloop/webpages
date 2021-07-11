@@ -230,4 +230,4 @@ module.exports = {
 };
 </script>
 
-<style src="../css/components/TimeRange.css" scoped />
+<style src="./css/components/TimeRange.css" scoped />

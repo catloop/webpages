@@ -147,4 +147,4 @@ module.exports = {
 };
 </script>
 
-<style src="../css/components/Scopes.css" scoped />
+<style src="./css/components/Scopes.css" scoped />
