@@ -367,7 +367,9 @@ module.exports = {
             this.contents = [];
             this.page = 0;
             this.finished = false;
-            this.$refs.scrollLoad.resetScroll();
+            setTimeout(function() {
+                this.$refs.scrollLoad && this.$refs.scrollLoad.resetScroll();
+            });
         },
         /** 重置搜索
          * @return {void}
